@@ -4,5 +4,7 @@
     "keywords": ["util", "functional", "server", "client", "browser"],
     "author": "Olayer",
     "contributors": [],
-    "dependencies": {}
+    "dependencies": {
+        "ejs": "^2.5.2"
+    }
 }
