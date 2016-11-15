@@ -3,7 +3,6 @@
 
 var mysql = require("mysql");
 var query;
-var resultado;
 var conexion = mysql.createConnection({
     host:  "localhost",
     user:  "root",
@@ -16,11 +15,11 @@ var funcionQuery=function(err, rows)
                                 if (err) 
                                 {
                                     console.error(err);
-                                    resultado=undefined;
+                                    callback(err);
                                 } 
                                 else 
                                 {
-                                    resultado=rows;
+                                    callback(rows);
                                 }
                             };
 var accion=function (err) 
@@ -35,8 +34,10 @@ var accion=function (err)
                 }
                 conexion.end();
             }
-function entrada(acc)
+function entrada(acc, valores, callback)
 {
+    if(callback===undefined)
+        callback=function(){};
     switch(acc)
     {
         //Acciones sobre usuarios(crear, autenticar modificar,etc)
@@ -111,11 +112,11 @@ function entrada(acc)
     }
     return resultado;
 }
- function ejecutarQuery()
+ function ejecutarQuery(acc,valores,callback)
     {
-        entrada(acc,valores);
+        entrada(acc,valores,callback);
         return resultado;
     }
-module.request(ejecutarQuery);
+module.exports=ejecutarQuery;
 
 

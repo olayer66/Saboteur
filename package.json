@@ -5,6 +5,8 @@
     "author": "Olayer",
     "contributors": [],
     "dependencies": {
-        "ejs": "^2.5.2"
+        "ejs": "^2.5.2",
+        "fs":"^7.10.0",
+        "mysql":"^2.12.0"
     }
 }
