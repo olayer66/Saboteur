@@ -9,7 +9,12 @@ var conexion = mysql.createConnection({
     password: "root",
     database: "saboteur"
 });
-
+// Salida del modulo con todas las funciones
+module.exports={
+    autenticar:autenticar,
+    crearUsuario: crearUsuario
+    
+};
 var funcionQuery=function(err, rows) 
                             {
                                 if (err) 
@@ -47,25 +52,7 @@ function entrada(acc, valores, callback)
             //Conectamos con la consulta requerida
             conexion.connect(accion);
             break;
-        case "crear_usuario":
-            if(valores!=null && valores.length===7)
-            {
-                query="INSERT INTO Usuarios"+
-                      "VALUES (null, " + valores.nick +","+
-                                       + valores.nombre +","+
-                                       + valores.apellidos +","+
-                                       + valores.contraseña +","+
-                                       + valores.fechaNac +","+
-                                       + valores.sexo +","+
-                                       + valores.imagen +")";
-                //Conectamos con la consulta requerida
-                conexion.connect(accion);
-            }
-            else
-            {
-                resultado=undefined;
-            }
-            break;
+        
         case "modificar_usuario":
             if(valores!=null && valores.length===7)
             {
@@ -112,11 +99,28 @@ function entrada(acc, valores, callback)
     }
     return resultado;
 }
- function ejecutarQuery(acc,valores,callback)
+//Funciones para el control de usuarios
+function crearUsuario(valores,callback)
+{
+    if(callback===undefined)
+        callback=function(){};
+    if(valores!=null && valores.length===7)
     {
-        entrada(acc,valores,callback);
-        return resultado;
+        query="INSERT INTO Usuarios"+
+              "VALUES (null, " + valores.nick +","+
+                               + valores.nombre +","+
+                               + valores.apellidos +","+
+                               + valores.contraseña +","+
+                               + valores.fechaNac +","+
+                               + valores.sexo +","+
+                               + valores.imagen +")";
+        //Conectamos con la consulta requerida
+        conexion.connect(accion);
     }
-module.exports=ejecutarQuery;
+    else
+    {
+        callback(err);
+    }
+}
 
 
