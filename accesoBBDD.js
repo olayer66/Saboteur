@@ -3,6 +3,7 @@
 
 var mysql = require("mysql");
 var query;
+var valoresEntrada;
 var conexion = mysql.createConnection({
     host:  "localhost",
     user:  "root",
@@ -11,11 +12,22 @@ var conexion = mysql.createConnection({
 });
 // Salida del modulo con todas las funciones
 module.exports={
-    autenticar:autenticar,
-    crearUsuario: crearUsuario
+    autenticar: autenticar,
+    crearUsuario: crearUsuario,
+    estaConectado: conectado,
+    partidasUsuario: partidasUsuario
+    
     
 };
-var funcionQuery=function(err, rows) 
+var accion=function (callback,err) 
+            {
+                if (err) 
+                {
+                    console.error(err);
+                } 
+                else 
+                {
+                    conexion.query(query,valoresEntrada,function(err, rows) 
                             {
                                 if (err) 
                                 {
@@ -26,16 +38,7 @@ var funcionQuery=function(err, rows)
                                 {
                                     callback(rows);
                                 }
-                            };
-var accion=function (err) 
-            {
-                if (err) 
-                {
-                    console.error(err);
-                } 
-                else 
-                {
-                    conexion.query(query,funcionQuery);
+                            });
                 }
                 conexion.end();
             }
@@ -45,14 +48,6 @@ function entrada(acc, valores, callback)
         callback=function(){};
     switch(acc)
     {
-        //Acciones sobre usuarios(crear, autenticar modificar,etc)
-        case "autenticar":
-            query="SELECT Nick,Contarseña " + 
-                  "FROM Usuarios";
-            //Conectamos con la consulta requerida
-            conexion.connect(accion);
-            break;
-        
         case "modificar_usuario":
             if(valores!=null && valores.length===7)
             {
@@ -104,23 +99,41 @@ function crearUsuario(valores,callback)
 {
     if(callback===undefined)
         callback=function(){};
-    if(valores!=null && valores.length===7)
+    if(valores!==null && valores.length===7)
     {
         query="INSERT INTO Usuarios"+
-              "VALUES (null, " + valores.nick +","+
-                               + valores.nombre +","+
-                               + valores.apellidos +","+
-                               + valores.contraseña +","+
-                               + valores.fechaNac +","+
-                               + valores.sexo +","+
-                               + valores.imagen +")";
+              "VALUES (null,?,?,?,?,?,?,?)";
         //Conectamos con la consulta requerida
-        conexion.connect(accion);
+        valoresEntrada=[valores.nick,valores.nombre,valores.apellidos,valores.contraseña,valores.fechaNac,valores.sexo,valores.imagen];
+        conexion.connect(function(err) { accion(err, callback); });
     }
     else
     {
-        callback(err);
+        callback(null);
     }
 }
-
+function autenticar(nick,callback)
+{
+    if(nick!==null && nick==="String")
+    {
+    query="SELECT Nick,Contarseña " + 
+          "FROM Usuarios"+
+          "WHERE Nick= ?";
+    valoresEntrada=[nick];
+    //Conectamos con la consulta requerida
+    conexion.connect(function(err) { accion(err, callback); });
+    }
+    else
+    {
+        callback(null);
+    }
+}
+function conectado(ID,callback)
+{
+    
+}
+function partidasUsuario(ID,callback)
+{
+    
+}
 
