@@ -2,12 +2,16 @@
 
 var express = require("express");
 var servidor= express();
-
+var fs=require("fs");
 //Configuracion de Express
-servidor.set("views",paginas);
+servidor.set("views","paginas");
 
 //funcionalidad del servidor
-servidor.get("",);
+servidor.get("/",function(req,res){
+    
+    res.render("inicio",null);
+    res.end();
+});
 
 //Abrimos el servidor a la escucha por el puerto 3000
 servidor.listen(3000, function(err) {
