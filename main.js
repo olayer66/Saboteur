@@ -8,14 +8,22 @@ var path = require("path");
 //Variables
 var servidor= express();
 var recEstaticos= path.join(__dirname, "static");
+var datos;
 //Configuracion de Express
 servidor.set("view engine", "ejs");
 servidor.set("views","paginas");
+
+//Middleware
 servidor.use(express.static(recEstaticos));
 //funcionalidad del servidor
 servidor.get("/",function(req,res){
     res.status(200);
-    res.render("inicio",null);
+    res.render("inicio",datos);
+    res.end();
+});
+servidor.get("/nuevousuario",function(req,res){
+    res.status(200);
+    res.render("nuevousuario",null);
     res.end();
 });
 
