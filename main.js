@@ -1,14 +1,20 @@
 "use strict";
 
+//Carga de modulos
 var express = require("express");
-var servidor= express();
 var fs=require("fs");
-//Configuracion de Express
-servidor.set("views","paginas");
+var path = require("path");
 
+//Variables
+var servidor= express();
+var recEstaticos= path.join(__dirname, "static");
+//Configuracion de Express
+servidor.set("view engine", "ejs");
+servidor.set("views","paginas");
+servidor.use(express.static(recEstaticos));
 //funcionalidad del servidor
 servidor.get("/",function(req,res){
-    
+    res.status(200);
     res.render("inicio",null);
     res.end();
 });
