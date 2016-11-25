@@ -4,21 +4,23 @@
 var express = require("express");
 var fs=require("fs");
 var path = require("path");
-
+var bodyParser = require("body-parser");
+var accBBDD =require("./accesoBBDD");
 //Variables
 var servidor= express();
 var recEstaticos= path.join(__dirname, "static");
-var datos;
 //Configuracion de Express
 servidor.set("view engine", "ejs");
 servidor.set("views","paginas");
 
 //Middleware
 servidor.use(express.static(recEstaticos));
+servidor.use(bodyParser.urlencoded({ extended: true }));
 //funcionalidad del servidor
+//Metodos GET
 servidor.get("/",function(req,res){
     res.status(200);
-    res.render("inicio",datos);
+    res.render("inicio",null);
     res.end();
 });
 servidor.get("/nuevousuario",function(req,res){
@@ -27,6 +29,29 @@ servidor.get("/nuevousuario",function(req,res){
     res.end();
 });
 
+//Metodos POST
+servidor.post("/crearusuario", function(req, res) 
+{
+    accBBDD.crearUsuario(req.body,function(err,salida)
+    {
+        if(err && salida!==null)
+        {
+            res.status(400);
+            res.reder("errordatos",salida);
+        }
+        else if(err && salida===null)
+        {
+            res.status(400);
+            res.reder("errordatos",err);
+        }
+        else
+        {
+            res.status(200);
+            res.render("/usuariocreado",req.body.nick);
+        }
+    });
+    res.end();
+});
 //Abrimos el servidor a la escucha por el puerto 3000
 servidor.listen(3000, function(err) {
     if (err) {

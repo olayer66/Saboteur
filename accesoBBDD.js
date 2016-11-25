@@ -44,11 +44,11 @@ var accion=function (callback,err)
                     if (err) 
                     {
                         console.error(err);
-                        callback(err);
+                        callback(err,null);
                     } 
                     else 
                     {
-                        callback(rows);
+                        callback(null,rows);
                     }
                 });
     }
@@ -69,7 +69,7 @@ function crearUsuario(valores,callback)
     }
     else
     {
-        callback(null);
+        callback(err,"Datos incorrectos");
     }
 }
 function conectar(nick,callback)
@@ -85,7 +85,7 @@ function conectar(nick,callback)
     }
     else
     {
-        callback(null);
+        callback(err,"Datos no validos");
     }
 }
 function estaConectado(ID,callback)
