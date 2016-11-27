@@ -18,15 +18,15 @@ servidor.use(express.static(recEstaticos));
 servidor.use(bodyParser.urlencoded({ extended: true }));
 //funcionalidad del servidor
 //Metodos GET
-servidor.get("/",function(req,res){
+servidor.get("/",function(req,res)
+{
     res.status(200);
-    res.render("inicio",null);
-    res.end();
+    res.render("inicio",{IDUsuario:null});
 });
-servidor.get("/nuevousuario",function(req,res){
+servidor.get("/nuevousuario",function(req,res)
+{
     res.status(200);
     res.render("nuevousuario",null);
-    res.end();
 });
 
 //Metodos POST
@@ -50,7 +50,6 @@ servidor.post("/crearusuario", function(req, res)
             res.render("/usuariocreado",req.body.nick);
         }
     });
-    res.end();
 });
 //Abrimos el servidor a la escucha por el puerto 3000
 servidor.listen(3000, function(err) {
