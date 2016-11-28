@@ -55,14 +55,15 @@ body{
 	height: 800px;
 }
 .entrada{
-		background-image:url("../images/sand.jpg");
-		opacity: 0.7;
+    background-image:url("../images/sand.jpg");
+    opacity: 0.7;
     padding: 10px;
     color: #000000;
     position: absolute;
+    width: 90%;
     z-index: 1;
-		border-radius: 20px;
-		margin: 50px;
+    border-radius: 20px;
+    margin: 50px;
 
   border: silver 10px solid;
   border-image-source: url("../images/marco_dorado_200.png");

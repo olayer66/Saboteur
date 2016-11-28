@@ -36,6 +36,7 @@ var accion=function (callback,err)
     if (err) 
     {
         console.error(err);
+        callback(err,null);
     } 
     else 
     {
@@ -69,7 +70,7 @@ function crearUsuario(valores,callback)
     }
     else
     {
-        callback(err,"Datos incorrectos");
+        callback(new Error("Faltan datos."),null);
     }
 }
 function conectar(nick,callback)

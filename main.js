@@ -34,15 +34,10 @@ servidor.post("/nuevousuario", function(req, res)
 {
     accBBDD.crearUsuario(req.body,function(err,salida)
     {
-        if(err && salida!==null)
+        if(err)
         {
             res.status(400);
-            res.reder("errordatos",salida);
-        }
-        else if(err && salida===null)
-        {
-            res.status(400);
-            res.reder("errordatos",err);
+            res.render("errordatos",err);
         }
         else
         {

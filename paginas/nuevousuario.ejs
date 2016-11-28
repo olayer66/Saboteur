@@ -26,28 +26,39 @@
 
 
 	<!--Cuerpo-->
-        <div class="cuerpo">
-            
+        <div class="cuerpo">           
             <div class="entrada">
                 <form method="POST" action="/nuevousuario">
-                    <div>
-                        <label for="formNombre">Nombre:</label>
-                        <input type="text" name="nombre" id="formNombre">
+                    <div id="nick">
+                        <label for="formNick">Apodo:</label>
+                        <input type="text" name="nick" id="formNick" required>
                     </div>
-                    <div>
-                       <label for="formEdad">Edad:</label>
-                       <input type="text" name="edad" id="formEdad">
+                    <div id="datosUsuario">
+                       <label for="formNombre">Nombre:</label>
+                       <input type="text" name="nombre" id="formNombre" required>
+                       <label for="formApellidos">Apellidos:</label>
+                       <input type="text" name="apellidos" id="formapellidos" required>
                     </div>
-                    <div>
+                    <div id="contrasenia">
+                       <label for="formContrasenia">Contraseña:</label><br>
+                       <input type="password" name="contra" id="formContrasenia" required><br>
+                       <label for="formContraseniaRep">Repetir la Contraseña:</label><br>
+                       <input type="password" name="contraRep" id="formContraseniaRep" required>
+
+                    </div>
+                    <div id="fechaNac">
+                       <label for="formFecha">Fecha de nacimiento:</label>
+                       <input type="date" name="FechaNac" id="formFecha" required> 
+                    </div>
+                    <div id="sexo">
                        <input type="radio" name="sexo" value="H" id="formHombre">
                        <label for="formHombre">Hombre</label>
                        <input type="radio" name="sexo" value="M" id="formMujer">
                        <label for="formMujer">Mujer</label>
                     </div>
-                    <div>
-                       <input type="checkbox" name="fumador" value="ON" 
-                                  id="formFumador">
-                       <label for="formFumador">Fumador/a</label>
+                    <div id="imagen">
+                       <label for="formImagen">Selecciona una imagen de perfil:</label>
+                       <input type="file" name="imgPerfil" id="formImagen" >
                     </div>
                     <div>
                        <input type="submit" value="Enviar">
