@@ -21,13 +21,13 @@
             <!--Menu-->
             <div class="menu">
     		<ul>
-                <% if (IDUsuario !== null) { %> <!--datos == null -->
-                    <li id="boton"><a href="html/login.html"><img id="imgBoton" src="images/piedra_login.png" alt="Iniciar sesion"></a></li>
-                    <li id="boton"><a href="html/nuevousuario.html"><img id="imgBoton" src="images/piedra_nuevo_usuario.png" alt="Nuevo usuario"></a></li>
+                <% if (IDUsuario === null) { %> <!--datos == null -->
+                    <li id="boton"><a href="login.html"><img id="imgBoton" src="images/piedra_login.png" alt="Iniciar sesion"></a></li>
+                    <li id="boton"><a href="nuevousuario"><img id="imgBoton" src="images/piedra_nuevo_usuario.png" alt="Nuevo usuario"></a></li>
                 <% } else { %>
-                    <li id="boton"><a href="html/desconectar.html"> <img id="imgBoton" src="images/piedra_cerrar_sesion.png" alt="Cerrar sesion"></a></li>
-                    <li id="boton"><a href="html/verpartidas.html"> <img id="imgBoton" src="images/piedra_ver_partidas.png"  alt="Ver partidas"> </a></li>
-                    <li id="boton"><a href="html/crearPartida.html"><img id="imgBoton" src="images/piedra_nueva_partida.png" alt="Crear partida"></a></li>
+                    <li id="boton"><a href="desconectar.html"> <img id="imgBoton" src="images/piedra_cerrar_sesion.png" alt="Cerrar sesion"></a></li>
+                    <li id="boton"><a href="verpartidas.html"> <img id="imgBoton" src="images/piedra_ver_partidas.png"  alt="Ver partidas"> </a></li>
+                    <li id="boton"><a href="crearPartida.html"><img id="imgBoton" src="images/piedra_nueva_partida.png" alt="Crear partida"></a></li>
                 <% } %></ul>
             </div>
         </div>
