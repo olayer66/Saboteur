@@ -37,7 +37,7 @@ servidor.post("/nuevousuario", function(req, res)
         if(err)
         {
             res.status(400);
-            res.render("error",{cabecera:err.number+"-Error al Crear la cuenta",
+            res.render("error",{cabecera:"400-Error al crear la cuenta",
                                 mensaje: err.message,
                                 pila: err.stack});
         }

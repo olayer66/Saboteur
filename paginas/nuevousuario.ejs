@@ -18,8 +18,8 @@
             <!--Menu-->
             <div class="menu">
     		<ul>
-                    <li id="boton"><a href="login.html"><img id="imgBoton" src="images/piedra_login.png" alt="Iniciar sesion"></a></li>
-                    <li id="boton"><a href="nuevousuario.html"><img id="imgBoton" src="images/piedra_nuevo_usuario.png" alt="Nuevo usuario"></a></li>
+                    <li id="boton"><a href="login"><img id="imgBoton" src="images/piedra_login.png" alt="Iniciar sesion"></a></li>
+                    <li id="boton"><a href="nuevousuario"><img id="imgBoton" src="images/piedra_nuevo_usuario.png" alt="Nuevo usuario"></a></li>
                 </ul>
             </div>
         </div>
@@ -28,42 +28,63 @@
 	<!--Cuerpo-->
         <div class="cuerpo">           
             <div class="entrada">
+                <div id="tablaNuevoUsuario">
                 <form method="POST" action="/nuevousuario">
                     <div id="nick">
-                        <label for="formNick">Apodo:</label>
-                        <input type="text" name="nick" id="formNick" required>
+                        <div id="Cell">
+                            <label for="formNick">Apodo:</label>
+                            <input type="text" name="nick" id="formNick" required>
+                        </div>
                     </div>
                     <div id="datosUsuario">
-                       <label for="formNombre">Nombre:</label>
-                       <input type="text" name="nombre" id="formNombre" required>
-                       <label for="formApellidos">Apellidos:</label>
-                       <input type="text" name="apellidos" id="formapellidos" required>
+                        <div id="Cell">
+                            <label for="formNombre">Nombre:</label>
+                            <input type="text" name="nombre" id="formNombre" required>
+                        </div>
+                        <div id="Cell">
+                            <label for="formApellidos">Apellidos:</label>
+                            <input type="text" name="apellidos" id="formapellidos" required>
+                        </div>
                     </div>
                     <div id="contrasenia">
-                       <label for="formContrasenia">Contraseña:</label><br>
-                       <input type="password" name="contra" id="formContrasenia" required><br>
-                       <label for="formContraseniaRep">Repetir la Contraseña:</label><br>
-                       <input type="password" name="contraRep" id="formContraseniaRep" required>
-
+                        <div id="Cell">
+                            <label for="formContrasenia">Contraseña:</label>
+                            <input type="password" name="contra" id="formContrasenia" required>
+                        </div>
+                        <div id="Cell">
+                            <label for="formContraseniaRep">Repetir la Contraseña:</label>
+                            <input type="password" name="contraRep" id="formContraseniaRep" required>
+                        </div>
                     </div>
                     <div id="fechaNac">
-                       <label for="formFecha">Fecha de nacimiento:</label>
-                       <input type="date" name="FechaNac" id="formFecha" required> 
+                        <div id="Cell">
+                            <label for="formFecha">Fecha de nacimiento:</label>
+                            <input type="date" name="FechaNac" id="formFecha" required> 
+                        </div>
                     </div>
                     <div id="sexo">
-                       <input type="radio" name="sexo" value="H" id="formHombre">
-                       <label for="formHombre">Hombre</label>
-                       <input type="radio" name="sexo" value="M" id="formMujer">
-                       <label for="formMujer">Mujer</label>
+                        <div id="Cell">
+                            <input type="radio" name="sexo" value="H" id="formHombre">
+                            <label for="formHombre">Hombre</label>
+                            <input type="radio" name="sexo" value="M" id="formMujer">
+                            <label for="formMujer">Mujer</label>
+                        </div>
                     </div>
+                <div id="tablaNuevoUsuario">
                     <div id="imagen">
-                       <label for="formImagen">Selecciona una imagen de perfil:</label>
-                       <input type="file" name="imgPerfil" id="formImagen" >
+                        <div id="Cell">
+                            <label for="formImagen">Selecciona una imagen de perfil:</label>
+                            <input type="file" name="imgPerfil" id="formImagen" >
+                        </div>
                     </div>
-                    <div>
-                       <input type="submit" value="Enviar">
+                </div>
+                    <div id="nuevoEnviar">
+                       <div id="Cell">
+                            <input type="image" src="images/piedra_login.png" alt="Submit Form" id="imgBoton">
+                       </div>
                     </div>
                 </form>
+                </div>
             </div>
         </div>
 
