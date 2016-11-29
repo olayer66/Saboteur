@@ -37,7 +37,9 @@ servidor.post("/nuevousuario", function(req, res)
         if(err)
         {
             res.status(400);
-            res.render("errordatos",err);
+            res.render("error",{cabecera:err.number+"-Error al Crear la cuenta",
+                                mensaje: err.message,
+                                pila: err.stack});
         }
         else
         {
@@ -45,6 +47,11 @@ servidor.post("/nuevousuario", function(req, res)
             res.render("/usuariocreado",req.body.nick);
         }
     });
+});
+servidor.post("/volvernuevo", function(req, res) 
+{
+   res.status(200);
+   res.render("nuevousuario",null);
 });
 //Abrimos el servidor a la escucha por el puerto 3000
 servidor.listen(3000, function(err) {

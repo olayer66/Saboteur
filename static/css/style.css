@@ -28,6 +28,19 @@ body{
 	border-bottom-color: green;
 	border-bottom-style: solid;
 }
+.menuVacio{
+	background-image:url("../images/grass.png");
+	background-size: 500px;
+	background-position: bottom;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+	position:relative;
+	float:left;
+	border-bottom: 0px;
+	border-bottom-color: green;
+	border-bottom-style: solid;
+}
 
 #boton{
 	background-image:url("../images/piedra.png");
@@ -70,4 +83,8 @@ body{
   border-image-slice: 21;
   padding: 10px;
   text-align: justify;
+}
+#errorStack{
+    background-color: white;
+    border:silver 5px inner;
 }
