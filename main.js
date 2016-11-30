@@ -7,10 +7,11 @@ var path = require("path");
 var bodyParser = require("body-parser");
 var accBBDD =require("./accesoBBDD");
 var multer=require("multer");
+var expressValidator = require("express-validator");
 //Variables
-var facMulter= multer({storagemedia});
-var servidor= express();
+var facMulter= multer({ storage: multer.memoryStorage() });
 var recEstaticos= path.join(__dirname, "static");
+var servidor= express();
 //Configuracion de Express
 servidor.set("view engine", "ejs");
 servidor.set("views","paginas");
@@ -18,6 +19,7 @@ servidor.set("views","paginas");
 //Middleware
 servidor.use(express.static(recEstaticos));
 servidor.use(bodyParser.urlencoded({ extended: true }));
+servidor.use(expressValidator());
 //funcionalidad del servidor
 //Metodos GET
 servidor.get("/",function(req,res)
@@ -32,11 +34,40 @@ servidor.get("/nuevousuario",function(req,res)
 });
 
 //Metodos POST
-servidor.post("/nuevousuario", function(req, res) 
+servidor.post("/nuevousuario",facMulter.single("imgPerfil"), function(req, res) 
 {
-    if(req.body.imgPerfil==="")
+    //control de contenido    
+        //Campos vacios
+            req.checkBody("nick","El campo no puede estar vacio").notEmpty();
+            req.checkBody("nombre","El campo no puede estar vacio").notEmpty();
+            req.checkBody("apellidos","El campo no puede estar vacio").notEmpty();
+            req.checkBody("contra","El campo no puede estar vacio").notEmpty();
+            req.checkBody("contraRep","El campo no puede estar vacio").notEmpty();
+            req.checkBody("fechaNac","El campo no puede estar vacio").notEmpty();
+            req.checkBody("sexo","El campo no puede estar vacio").notEmpty();
+        //Control de tipos de datos
+            req.checkBody("nick","El campo solo puede contener letras y numeros").matches(/^[A-Z0-9]*$/i);
+            req.checkBody("nombre","El campo solo puede contener letras").matches(/^[A-Z]*$/i);
+            req.checkBody("apellidos","El campo solo puede contener letras").matches(/^[A-Z]*$/i);
+            req.checkBody("contra","El campo solo puede contener letras y numeros").matches(/^[A-Z0-9]*$/i);
+            req.checkBody("contraRep","El campo solo puede contener letras y numeros").matches(/^[A-Z0-9]*$/i);
+            req.checkBody("fechaNac","El campo no contiene una fecha valida(DD/MM/AAAA)").notEmpty();
+        //Control de contraseña (personalizado)
+            req.checkBody("contra","El campo contraseña ha de tener entre 4 y 8 caracteres").isLength({ min: 4, max: 8 });
+            req.checkBody("contraRep","El campo de confirmacion de contraseña ha de tener entre 4 y 8 caracteres").isLength({ min: 4, max: 8 });
+            req.checkBody("contra","La repeticion de la contraseña no es igual").equals(req.body.contraRep);
+        //Control de la fecha (personalizado)
+            req.checkBody("fechaNac","La fecha debe ser anterior al dia actual").isBefore();
+            //¿Usar personalizado con una expresion regular?
+    //Carga de la imagen de perfil
+    if (req.file)
+    {
+        req.body.imgPerfil= req.file.buffer;
+    }
+    else
+    {
         req.body.imgPerfil=null;
-    console.log(req.body);
+    }
     accBBDD.crearUsuario(req.body,function(err,salida)
     {
         if(err)
@@ -53,6 +84,7 @@ servidor.post("/nuevousuario", function(req, res)
         }
     });
 });
+
 servidor.post("/volvernuevo", function(req, res) 
 {
    res.status(200);

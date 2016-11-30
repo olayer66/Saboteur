@@ -93,18 +93,41 @@ function crearUsuario(valores,callback)
 }
 function conectar(nick,callback)
 {
-    if(nick!==null && nick==="String")
+    if(nick!==null && typeof(nick)==="String")
     {
     query="SELECT Nick,Contarseña " + 
           "FROM Usuarios"+
           "WHERE Nick= ?";
     valoresEntrada=[nick];
     //Conectamos con la consulta requerida
-    conexion.connect(function(err) { accion(err, callback); });
+    conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    });
     }
     else
     {
-        callback(err,"Datos no validos");
+        callback(err,false);
     }
 }
 function estaConectado(ID,callback)
@@ -128,15 +151,9 @@ function modificarUsuario(ID,valores,callback)
         if(valores!=null)
         {
             query="UPDATE Usuarios"+
-                  "SET  Nick=" + valores.nick +","+
-                       "Nombre=" + valores.nombre +","+
-                       "Apellidos="+ valores.apellidos +","+
-                       "Contraseña"+ valores.contraseña +","+
-                       "Fecha_Nac="+ valores.fechaNac +","+
-                       "Sexo="+ valores.sexo +","+
-                       "Imagen="+ valores.imagen +
-                "WHERE ID_usuario= ?";
-            valoresEntrada=[ID,valores.nick,valores.nombre,valores.apellidos,valores.contraseña,valores.fechaNac,valores.sexo,valores.imagen];
+                  "SET  Nick=?, Nombre=?, Apellidos=?, Contraseña=?, Fecha_Nac=?, Sexo=?, Imagen=?" +
+                  "WHERE ID_usuario= ?";
+            valoresEntrada=[valores.nick,valores.nombre,valores.apellidos,valores.contraseña,valores.fechaNac,valores.sexo,valores.imagen,IDUsuario];
             //Conectamos con la consulta requerida
             conexion.connect(accion);
         }
