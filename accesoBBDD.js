@@ -5,6 +5,7 @@ var mysql = require("mysql");
 var query;
 var valoresEntrada;
 var conexion = mysql.createConnection({
+    port:"3306",
     host:  "localhost",
     user:  "root",
     password: "root",
@@ -58,20 +59,37 @@ var accion=function (callback,err)
 //Funciones para el control de usuarios
 function crearUsuario(valores,callback)
 {
+    console.log(valores);
     if(callback===undefined)
         callback=function(){};
-    if(valores!==null && valores.length===8)
+    query="INSERT INTO Usuarios"+
+          "VALUES (null,?,?,?,?,?,?,?)";
+    //Conectamos con la consulta requerida
+    valoresEntrada=[valores.nick,valores.nombre,valores.apellidos,valores.contra,valores.FechaNac,valores.sexo,valores.imgPerfil];
+    conexion.connect(function(err)
     {
-        query="INSERT INTO Usuarios"+
-              "VALUES (null,?,?,?,?,?,?,?)";
-        //Conectamos con la consulta requerida
-        valoresEntrada=[valores.nick,valores.nombre,valores.apellidos,valores.contraseña,valores.fechaNac,valores.sexo,valores.imagen];
-        conexion.connect(function(err) { accion(err, callback); });
-    }
-    else
-    {
-        callback(new Error("Faltan datos."),null);
-    }
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    });
 }
 function conectar(nick,callback)
 {
@@ -107,7 +125,7 @@ function modificarUsuario(ID,valores,callback)
 {
     if(ID!==null && nick==="number")
     {
-        if(valores!=null && valores.length===7)
+        if(valores!=null)
         {
             query="UPDATE Usuarios"+
                   "SET  Nick=" + valores.nick +","+
@@ -161,7 +179,7 @@ function crearPartida(valores,callback)
 {
     if(callback===undefined)
         callback=function(){};
-    if(valores!==null && valores.length===6)
+    if(valores!==null)
     {
         query="INSERT INTO Partidas"+
               "VALUES (null,?,0,?,1,?,?,null,?,?)";      
@@ -255,7 +273,7 @@ function borrarAsignacionPartidas(ID,callback)
 }
 function borrarUsuarioDePartida(valores,callback)
 {
-    if(valores!==null && valores.length===6)
+    if(valores!==null)
     {
         query="DELETE FROM Asignacion_Partidas"+
               "WHERE ID_Partida= ?"+

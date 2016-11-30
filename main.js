@@ -32,6 +32,7 @@ servidor.get("/nuevousuario",function(req,res)
 //Metodos POST
 servidor.post("/nuevousuario", function(req, res) 
 {
+    console.log(req.body);
     accBBDD.crearUsuario(req.body,function(err,salida)
     {
         if(err)
