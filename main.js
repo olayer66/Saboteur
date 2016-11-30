@@ -6,7 +6,9 @@ var fs=require("fs");
 var path = require("path");
 var bodyParser = require("body-parser");
 var accBBDD =require("./accesoBBDD");
+var multer=require("multer");
 //Variables
+var facMulter= multer({storagemedia});
 var servidor= express();
 var recEstaticos= path.join(__dirname, "static");
 //Configuracion de Express
@@ -32,6 +34,8 @@ servidor.get("/nuevousuario",function(req,res)
 //Metodos POST
 servidor.post("/nuevousuario", function(req, res) 
 {
+    if(req.body.imgPerfil==="")
+        req.body.imgPerfil=null;
     console.log(req.body);
     accBBDD.crearUsuario(req.body,function(err,salida)
     {
@@ -45,7 +49,7 @@ servidor.post("/nuevousuario", function(req, res)
         else
         {
             res.status(200);
-            res.render("/usuariocreado",req.body.nick);
+            res.render("usuariocreado",{IDUsuario:null,nick:req.body.nick});
         }
     });
 });

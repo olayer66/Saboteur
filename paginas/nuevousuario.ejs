@@ -29,7 +29,7 @@
         <div class="cuerpo">           
             <div class="entrada">
                 <div id="tablaNuevoUsuario">
-                <form method="POST" action="/nuevousuario">
+                    <form method="POST" action="/nuevousuario" enctype="multipart/form-data">
                     <div id="nick">
                         <div id="Cell">
                             <label for="formNick">Apodo:</label>
@@ -64,7 +64,7 @@
                     </div>
                     <div id="sexo">
                         <div id="Cell">
-                            <input type="radio" name="sexo" value="H" id="formHombre">
+                            <input type="radio" name="sexo" value="H" id="formHombre" required>
                             <label for="formHombre">Hombre</label>
                             <input type="radio" name="sexo" value="M" id="formMujer">
                             <label for="formMujer">Mujer</label>

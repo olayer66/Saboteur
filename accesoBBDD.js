@@ -62,8 +62,8 @@ function crearUsuario(valores,callback)
     console.log(valores);
     if(callback===undefined)
         callback=function(){};
-    query="INSERT INTO Usuarios"+
-          "VALUES (null,?,?,?,?,?,?,?)";
+    query="INSERT INTO Usuarios(Nick,Nombre,Apellidos,Contraseña,Fecha_Nac,Sexo,Imagen,Logeado)"+
+          "VALUES (?,?,?,?,?,?,?,false)";
     //Conectamos con la consulta requerida
     valoresEntrada=[valores.nick,valores.nombre,valores.apellidos,valores.contra,valores.FechaNac,valores.sexo,valores.imgPerfil];
     conexion.connect(function(err)
