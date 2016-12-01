@@ -28,6 +28,16 @@
 	<!--Cuerpo-->
         <div class="cuerpo">           
             <div class="entrada">
+                <% if(errores !== null){%>
+                <div class="cajaErrores">
+                    <h2>La información introducida en el formulario es incorrecta:</h2>
+                    <ul>
+                        <% errores.forEach(function(error) { %>
+                         <li><%= error.msg %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+                <%}%>
                 <div id="tablaNuevoUsuario">
                     <form method="POST" action="/nuevousuario" enctype="multipart/form-data">
                     <div id="nick">
