@@ -64,8 +64,8 @@ function crearUsuario(valores,callback)
         callback=function(){};
     query="INSERT INTO Usuarios(Nick,Nombre,Apellidos,Contraseña,Fecha_Nac,Sexo,Imagen,Logeado)"+
           "VALUES (?,?,?,?,?,?,?,false)";
+    valoresEntrada=[valores.nick,valores.nombre,valores.apellidos,valores.contra,valores.fechaNac,valores.sexo,valores.imgPerfil];
     //Conectamos con la consulta requerida
-    valoresEntrada=[valores.nick,valores.nombre,valores.apellidos,valores.contra,valores.FechaNac,valores.sexo,valores.imgPerfil];
     conexion.connect(function(err)
     {
         if (err) 
@@ -91,14 +91,14 @@ function crearUsuario(valores,callback)
         conexion.end();
     });
 }
-function conectar(nick,callback)
+function conectar(datos,callback)
 {
     if(nick!==null && typeof(nick)==="String")
     {
-    query="SELECT Nick,Contarseña " + 
+    query="SELECT Nick " + 
           "FROM Usuarios"+
-          "WHERE Nick= ?";
-    valoresEntrada=[nick];
+          "WHERE Nick= ? AND Contraseña= ?";
+    valoresEntrada=[datos.nick,datos.contra];
     //Conectamos con la consulta requerida
     conexion.connect(function(err)
     {

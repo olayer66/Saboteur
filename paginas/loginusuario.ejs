@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <title>Saboteur</title>
+        <link rel="shortcut icon" type="image/png" href="images/favicon.png"/>
+        <link rel="stylesheet" type="text/css"  href="css/style.css">
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <div class="cabeceraYMenu">
+          <!--Cabecera-->
+          <div class="cabecera">
+                    <div id="logo"><img src="images/Logo.png" alt="logo"></div>
+          </div>
+          <div id="fondoMenu">
+            <img src="images/entrada_cueva.png" alt="logoDer">
+          </div>
+            <!--Menu-->
+            <div class="menu">
+    		<ul>
+                    <li id="boton"><a href="login"><img id="imgBoton" src="images/piedra_login.png" alt="Iniciar sesion"></a></li>
+                    <li id="boton"><a href="nuevousuario"><img id="imgBoton" src="images/piedra_nuevo_usuario.png" alt="Nuevo usuario"></a></li>
+                </ul>
+            </div>
+        </div>
+
+
+	<!--Cuerpo-->
+        <div class="cuerpo">           
+            <div class="entrada">
+                <% if(errores !== null){%>
+                <div class="cajaErrores">
+                    <h2>La información introducida en el formulario es incorrecta:</h2>
+                    <ul>
+                        <% errores.forEach(function(error) { %>
+                         <li><%= error.msg %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+                <%}%>
+                <div id="tablaNuevoUsuario">
+                    <form method="POST" action="/loginusuario" enctype="multipart/form-data">
+                    <div id="nick">
+                        <div id="Cell">
+                            <label for="formNick">Apodo:</label>
+                            <input type="text" name="nick" id="formNick" required>
+                        </div>
+                    </div>
+                    <div id="contrasenia">
+                        <div id="Cell">
+                            <label for="formContrasenia">Contraseña:</label>
+                            <input type="password" name="contra" id="formContrasenia" required>
+                        </div>
+                    </div>
+                    <div id="nuevoEnviar">
+                       <div id="Cell">
+                            <input type="image" src="images/piedra_login.png" alt="Submit Form" id="imgBoton">
+                       </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+
+
+    </body>
+</html>
