@@ -90,13 +90,13 @@ body{
     border:silver 3px inset;
 }
 <!--Tabla para el formulario de nuevo usuario-->
-#tablaNuevoUsuario{
+#tabla{
     display:table;
     width:auto;
     margin-left:10px;
     margin-rigth:10px;
 }
-#nick,#datosUsuario,#contrasenia,#contraseniaRep,#fechaNac,#sexo,#imagen{
+#nick,#datosUsuario,#contrasenia,#contraseniaRep,#fechaNac,#sexo,#imagen,#fila{
     display:table-row;
 }
 #nuevoEnviar{

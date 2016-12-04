@@ -23,9 +23,11 @@ module.exports={
     //Partidas
     crearPartida: crearPartida,
     mostrarPartida: mostrarPartida,
-    borrarPartida: borrarPartida, 
+    borrarPartida: borrarPartida,
+    partidasPropias:partidasPropias,
     //Asignacion de partidas
     partidasUsuario: partidasUsuario,
+    partidasUsuarioDisponibles:partidasUsuarioDisponibles,
     usuariosPartida:usuariosPartida,
     borrarAsignacionPartidas:borrarAsignacionPartidas,
     borrarUsuarioDePartida:borrarUsuarioDePartida
@@ -59,11 +61,10 @@ var accion=function (callback,err)
 //Funciones para el control de usuarios
 function crearUsuario(valores,callback)
 {
-    console.log(valores);
     if(callback===undefined)
         callback=function(){};
-    query="INSERT INTO Usuarios(Nick,Nombre,Apellidos,Contraseña,Fecha_Nac,Sexo,Imagen,Logeado)"+
-          "VALUES (?,?,?,?,?,?,?,false)";
+    query="INSERT INTO Usuarios(Nick,Nombre,Apellidos,Contraseña,Fecha_Nac,Sexo,Imagen)"+
+          "VALUES (?,?,?,?,?,?,?)";
     valoresEntrada=[valores.nick,valores.nombre,valores.apellidos,valores.contra,valores.fechaNac,valores.sexo,valores.imgPerfil];
     //Conectamos con la consulta requerida
     conexion.connect(function(err)
@@ -93,12 +94,9 @@ function crearUsuario(valores,callback)
 }
 function conectar(datos,callback)
 {
-    if(nick!==null && typeof(nick)==="String")
-    {
-    query="SELECT Nick " + 
-          "FROM Usuarios"+
-          "WHERE Nick= ? AND Contraseña= ?";
-    valoresEntrada=[datos.nick,datos.contra];
+    query='SELECT ID_usuario FROM Usuarios WHERE Nick=\"?\" AND Contraseña=\"?\"';
+  console.log(query);
+    valoresEntrada=[datos.nickLog,datos.contraLog];
     //Conectamos con la consulta requerida
     conexion.connect(function(err)
     {
@@ -124,11 +122,6 @@ function conectar(datos,callback)
         }
         conexion.end();
     });
-    }
-    else
-    {
-        callback(err,false);
-    }
 }
 function estaConectado(ID,callback)
 {
@@ -202,7 +195,30 @@ function crearPartida(valores,callback)
               "VALUES (null,?,0,?,1,?,?,null,?,?)";      
         valoresEntrada=[valores.Nombre,valores.creador,valores.numMax,valores.numTurnos,valores.numTurnos,valores.fecha];
         //Conectamos con la consulta requerida
-        conexion.connect(function(err) { accion(err, callback); });
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    });
     }
     else
     {
@@ -218,7 +234,30 @@ function mostrarPartida(ID,callback)
               "WHERE ID_partida= ?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
-        conexion.connect(function(err) { accion(err, callback); });
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    });
     }
     else
     {
@@ -227,13 +266,75 @@ function mostrarPartida(ID,callback)
 }
 function borrarPartida(ID,callback)
 {
-    if(ID!==null && nick==="number")
+    if(ID!==null)
     {
         query="DELETE FROM Partidas"+
               "WHERE ID_partida= ?";
          valoresEntrada=[ID];
         //Conectamos con la consulta requerida
-        conexion.connect(function(err) { accion(err, callback); });    
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    });    
+    }
+    else
+    {
+        callback(null);
+    }
+}
+function partidasPropias(ID,callback)
+{
+    if(ID!==null)
+    {
+        query="SELECT *"+
+              " FROM Partidas"+
+              "WHERE Creador= ?";
+         valoresEntrada=[ID];
+        //Conectamos con la consulta requerida
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    });    
     }
     else
     {
@@ -241,16 +342,78 @@ function borrarPartida(ID,callback)
     }
 }
 //Funciones sobre la asignacion de partidas
+function partidasUsuarioDisponibles(ID,callback)
+{
+    if(ID!==null && nick==="number")
+    {
+        query="SELECT ID_Partida,Tipo_Jugador"+
+              "FROM Asignacion_Partidas AS A, Partidas AS B"+
+              "WHERE A.ID_Usuario<> ? AND A.ID_Partida=B_ID_Partida AND B.Estado_Partida=0";
+        valoresEntrada=[ID];
+        //Conectamos con la consulta requerida
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    }); 
+    }
+    else
+    {
+        callback(null);
+    }
+}
 function partidasUsuario(ID,callback)
 {
     if(ID!==null && nick==="number")
     {
         query="SELECT ID_Partida,Tipo_Jugador"+
-              "FROM Asignacion_Partidas"+
+              "FROM Asignacion_Partidas AS A, Partidas AS B"+
               "WHERE ID_Usuario= ?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
-        conexion.connect(function(err) { accion(err, callback); }); 
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    }); 
     }
     else
     {
@@ -266,7 +429,30 @@ function usuariosPartida(ID,callback)
               "WHERE ID_Partida= ?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
-        conexion.connect(function(err) { accion(err, callback); }); 
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    }); 
     }
     else
     {
@@ -281,7 +467,30 @@ function borrarAsignacionPartidas(ID,callback)
               "WHERE ID_Partida= ?";
          valoresEntrada=[ID];
         //Conectamos con la consulta requerida
-        conexion.connect(function(err) { accion(err, callback); });       
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    });       
     }
     else
     {
@@ -297,7 +506,30 @@ function borrarUsuarioDePartida(valores,callback)
               "AND ID_Usuario= ?";
         valoresEntrada=[valores.partida,valores.usuario];
        //Conectamos con la consulta requerida
-       conexion.connect(function(err) { accion(err, callback); });
+       conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    });
     }
     else
     {

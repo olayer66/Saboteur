@@ -5,14 +5,31 @@ var express = require("express");
 var fs=require("fs");
 var path = require("path");
 var bodyParser = require("body-parser");
-var accBBDD =require("./accesoBBDD");
 var multer=require("multer");
 var expressValidator = require("express-validator");
-var valFechas= require("./controlFecha");
+var session = require("express-session");
+var mysqlSession = require("express-mysql-session");
+//Craga de modulos personalizados
+var accBBDD =require("./accesoBBDD");
 //Variables
 var facMulter= multer({ storage: multer.memoryStorage() });
 var recEstaticos= path.join(__dirname, "static");
 var servidor= express();
+var MySQLStore = mysqlSession(session);
+var sessionStore = new MySQLStore({
+    port:"3306",
+    host:  "localhost",
+    user:  "root",
+    password: "root",
+    database: "saboteur"
+});
+var middlewareSession = session({
+    saveUninitialized: false,
+    secret: "foobar34",
+    resave: false,
+    store: sessionStore
+});
+
 //Configuracion de Express
 servidor.set("view engine", "ejs");
 servidor.set("views","paginas");
@@ -21,6 +38,7 @@ servidor.set("views","paginas");
 servidor.use(express.static(recEstaticos));
 servidor.use(bodyParser.urlencoded({ extended: true }));
 servidor.use(expressValidator());
+servidor.use(middlewareSession);
 //funcionalidad del servidor
 //Metodos GET
 servidor.get("/",function(req,res)
@@ -38,6 +56,12 @@ servidor.get("/login",function(req,res)
     res.status(200);
     res.render("loginusuario",{errores:null});
 });
+servidor.get("/verpartidas",function(req,res)
+{
+    res.status(200);
+    
+    res.render("verpartidas",{errores:null});
+})
 //Metodos POST
 servidor.post("/nuevousuario",facMulter.single("imgPerfil"), function(req, res) 
 {
@@ -108,24 +132,26 @@ servidor.post("/volvernuevo", function(req, res)
    res.render("nuevousuario",null);
 });
 
-servidor.post("/loginusuario", function(req, res) 
+servidor.post("/loginusuario",facMulter.none(), function(req, res) 
 {
+    console.log(req.body.nickLog);
+    console.log(req.body.contraLog);
     //control de contenido    
         //Campos vacios
-            req.checkBody("nick","El campo nick no puede estar vacio").notEmpty();
-            req.checkBody("contra","El campo contraseña no puede estar vacio").notEmpty();
+            req.checkBody("nickLog","El campo nick no puede estar vacio").notEmpty();
+            req.checkBody("contraLog","El campo contraseña no puede estar vacio").notEmpty();
         //Control de tipos de datos
-            req.checkBody("nick","El campo nick solo puede contener letras y numeros").matches(/^[A-Z0-9]*$/i);
-            req.checkBody("contra","El campo contraseña solo puede contener letras y numeros").matches(/^[A-Z0-9]*$/i);
+            req.checkBody("nickLog","El campo nick solo puede contener letras y numeros").matches(/^[A-Z0-9]*$/i);
+            req.checkBody("contraLog","El campo contraseña solo puede contener letras y numeros").matches(/^[A-Z0-9]*$/i);
         //Control de contraseña (personalizado)
-            req.checkBody("contra","El campo contraseña ha de tener entre 4 y 8 caracteres").isLength({ min: 4, max: 8 });
+            req.checkBody("contraLog","El campo contraseña ha de tener entre 4 y 8 caracteres").isLength({ min: 4, max: 8 });
 
     //Validacion del contenido
     req.getValidationResult().then(function(result) 
     {
         if (result.isEmpty()) 
         {
-            accBBDD.crearUsuario(req.body,function(err,salida)
+            accBBDD.conectar(req.body,function(err,salida)
             {
                 if(err)
                 {
@@ -137,14 +163,15 @@ servidor.post("/loginusuario", function(req, res)
                 else
                 {
                     res.status(200);
-                    res.render("verpartidas",{IDUsuario:null,nick:req.body.nick});
+                    req.session.IDUsuario=salida;
+                    res.redirect("/verpartidas");
                 }
             });
         } 
         else 
         {
              res.status(200);
-             res.render("nuevousuario",{errores:result.array()});
+             res.render("loginusuario",{errores:result.array()});
         }
     });
 });
