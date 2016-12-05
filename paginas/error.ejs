@@ -26,7 +26,7 @@
                 <p>Se ha producido el siguiente error: <%= mensaje %></p>
                 <h2>Pila de ejecución:</h2>
                 <pre id="errorStack"><%= pila %></pre>
-                <form method="POST" action="/volvernuevo">
+                <form method="POST" action="/<%=pagina%>">
                     <input type="image" src="images/piedra_volver.png" alt="Submit Form" id="imgBoton">
                 </form>
             </div>

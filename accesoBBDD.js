@@ -27,6 +27,7 @@ module.exports={
     partidasPropias:partidasPropias,
     devolverIDPartida:devolverIDPartida,
     //Asignacion de partidas
+    asignarUsuarioPartida:asignarUsuarioPartida,
     partidasUsuario: partidasUsuario,
     partidasUsuarioDisponibles:partidasUsuarioDisponibles,
     usuariosPartida:usuariosPartida,
@@ -191,9 +192,9 @@ function crearPartida(valores,callback)
         callback=function(){};
     if(valores!==null)
     {
-        query="INSERT INTO Partidas"+
-              "VALUES (null,?,0,?,1,?,?,null,?,?)";      
-        valoresEntrada=[valores.Nombre,valores.creador,valores.numMax,valores.numTurnos,valores.numTurnos,valores.fecha];
+        query="INSERT INTO Partidas(Nombre,Creador,Num_Max_Jugadores,Num_turnos,Fecha_Creacion)"+
+              "VALUES (?,?,?,?,?)";      
+        valoresEntrada=[valores.Nombre,valores.creador,valores.numMax,valores.numTurnos,valores.fecha];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
     {
@@ -368,17 +369,53 @@ function partidasPropias(ID,callback)
     }
     else
     {
-        callback(null);
+        callback(new Error("ID de usuario no valido"),null);
     }
 }
 //Funciones sobre la asignacion de partidas
+function asignarUsuarioPartida(IDUsuario,IDPartida,Roll,callback)
+{
+    if(IDUsuario!==null && typeof (IDusuario)==="number" && IDPartida!==null && typeof (IDPartida)==="number")
+    {
+        query="INSERT INTO Asignacion_Partidas(ID_Partida,ID_Usuario,Tipo_Jugador)"+
+              "VALUES (?,?,?)";      
+        valoresEntrada=[IDUsuario,IDPartida,Roll];
+        //Conectamos con la consulta requerida
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    }); 
+    }
+    else
+    {
+        callback(new Error("Valores de entrada no validos"),null);
+    }
+}
 function partidasUsuarioDisponibles(ID,callback)
 {
     if(ID!==null && nick==="number")
     {
-        query="SELECT ID_Partida,Tipo_Jugador"+
-              "FROM Asignacion_Partidas AS A, Partidas AS B"+
-              "WHERE A.ID_Usuario<> ? AND A.ID_Partida=B_ID_Partida AND B.Estado_Partida=0";
+        query="SELECT ID_Partida,Tipo_Jugador FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> \"?\" AND A.ID_Partida=B_ID_Partida AND B.Estado_Partida=\"0\"";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
@@ -415,7 +452,7 @@ function partidasUsuario(ID,callback)
 {
     if(ID!==null && nick==="number")
     {
-        query="SELECT ID_Partida,Tipo_Jugador"+
+        query="INSERT"+
               "FROM Asignacion_Partidas AS A, Partidas AS B"+
               "WHERE ID_Usuario= ?";
         valoresEntrada=[ID];

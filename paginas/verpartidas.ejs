@@ -18,8 +18,9 @@
             <!--Menu-->
             <div class="menu">
     		<ul>
-                    <li id="boton"><a href="login"><img id="imgBoton" src="images/piedra_login.png" alt="Iniciar sesion"></a></li>
-                    <li id="boton"><a href="nuevousuario"><img id="imgBoton" src="images/piedra_nuevo_usuario.png" alt="Nuevo usuario"></a></li>
+                    <li id="boton"><a href="desconectar"> <img id="imgBoton" src="images/piedra_cerrar_sesion.png" alt="Cerrar sesion"></a></li>
+                    <li id="boton"><a href="verpartidas"> <img id="imgBoton" src="images/piedra_ver_partidas.png"  alt="Ver partidas"> </a></li>
+                    <li id="boton"><a href="crearPartida"><img id="imgBoton" src="images/piedra_nueva_partida.png" alt="Crear partida"></a></li>
                 </ul>
             </div>
         </div>
@@ -43,7 +44,15 @@
                 </div>
                 <h1>Partidas Partidas creadas</h1>
                 <div id="partidasCreadas">
-                    
+                    <% propias.foreach(function(obj){%>
+                   <div id="fila">
+                       <div id="cell"><%=obj.Nombre%></div>
+                       <div id="cell"><%=obj.Num_Jugadores%></div>
+                       <div id="cell"><%=obj.Num_Max_Jugadores%></div>
+                       <div id="cell"><%=obj.Turnos%></div>
+                       <div id="cell"><%=obj.Fecha_Creacion%></div>                      
+                   </div> 
+                   <%});%>
                 </div>
                 <h1>Partidas temicadas</h1>
                 <div id="partidasTerminadas">

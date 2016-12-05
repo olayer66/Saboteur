@@ -58,10 +58,52 @@ servidor.get("/login",function(req,res)
 });
 servidor.get("/verpartidas",function(req,res)
 {
-    res.status(200);
-    
-    res.render("verpartidas",{errores:null});
-})
+    //variables para el paso al render
+    var parPropias;
+    var ParDisponibles;
+    //si existe login
+    if(req.session.IDUsuario!==null)
+    {
+        //Extraemos las partidas creada por el usuario
+        accBBDD.partidasPropias(req.session.IDUsuario,function(err,salida){
+            if(err)
+            {
+                 res.status(400);
+                  res.render("error",{cabecera:"400-Error al crear la cuenta",
+                                      mensaje: err.message,
+                                      pila: err.stack,
+                                      pagina:"verpartidas"});
+            }
+            else
+            {
+                //Extraemos las partidas disponibles en la que el usuario no este implicado
+                accBBDD.partidasUsuario(req.session.IDUsuario,function(err,salida){
+                if(err)
+                {
+                     res.status(400);
+                     res.render("error",{cabecera:"400-Error al crear la cuenta",
+                                         mensaje: err.message,
+                                         pila: err.stack,
+                                         pagina:"verpartidas"});
+                }
+                else
+                {
+                    //Futura implementacion partidas antiguas
+                    //Cargamos la vista de partidas
+                    res.status(200);
+                    res.render("verpartidas",{disponibles:parPropias,propias:ParDisponibles});
+                }
+                });
+            }
+        });
+    }
+    else
+    {
+        //Error por acceso denegado(sin login)
+        res.status(403);
+        res.render("accesodenegado",null);
+    }
+});
 //Metodos POST
 servidor.post("/nuevousuario",facMulter.single("imgPerfil"), function(req, res) 
 {
@@ -109,7 +151,8 @@ servidor.post("/nuevousuario",facMulter.single("imgPerfil"), function(req, res)
                     res.status(400);
                     res.render("error",{cabecera:"400-Error al crear la cuenta",
                                         mensaje: err.message,
-                                        pila: err.stack});
+                                        pila: err.stack,
+                                        pagina:"nuevousuario"});
                 }
                 else
                 {
@@ -158,7 +201,8 @@ servidor.post("/loginusuario",facMulter.none(), function(req, res)
                     res.status(400);
                     res.render("error",{cabecera:"400-Error al logearse",
                                         mensaje: err.message,
-                                        pila: err.stack});
+                                        pila: err.stack,
+                                        pagina:"loginusuario"});
                 }
                 else
                 {
