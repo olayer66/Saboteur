@@ -25,6 +25,7 @@ module.exports={
     mostrarPartida: mostrarPartida,
     borrarPartida: borrarPartida,
     partidasPropias:partidasPropias,
+    devolverIDPartida:devolverIDPartida,
     //Asignacion de partidas
     partidasUsuario: partidasUsuario,
     partidasUsuarioDisponibles:partidasUsuarioDisponibles,
@@ -95,7 +96,6 @@ function crearUsuario(valores,callback)
 function conectar(datos,callback)
 {
     query='SELECT ID_usuario FROM Usuarios WHERE Nick=\"?\" AND Contraseña=\"?\"';
-  console.log(query);
     valoresEntrada=[datos.nickLog,datos.contraLog];
     //Conectamos con la consulta requerida
     conexion.connect(function(err)
@@ -224,6 +224,36 @@ function crearPartida(valores,callback)
     {
         callback(null);
     }
+}
+function devolverIDPartida(nombre,callback)
+{
+    query='SELECT ID_partida FROM Partidas WHERE Nombre=\"?\"';
+    valoresEntrada=[nombre];
+    //Conectamos con la consulta requerida
+    conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(query,valoresEntrada,function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    });
 }
 function mostrarPartida(ID,callback)
 {
