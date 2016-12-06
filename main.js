@@ -65,7 +65,7 @@ servidor.get("/verpartidas",function(req,res)
     if(req.session.IDUsuario!==null)
     {
         //Extraemos las partidas creada por el usuario
-        accBBDD.partidasPropias(req.session.IDUsuario,function(err,salida){
+        accBBDD.partidasPropias(req.session.IDUsuario,function(err,propias){
             if(err)
             {
                  res.status(400);
@@ -76,8 +76,9 @@ servidor.get("/verpartidas",function(req,res)
             }
             else
             {
+                parPropias=propias;
                 //Extraemos las partidas disponibles en la que el usuario no este implicado
-                accBBDD.partidasUsuario(req.session.IDUsuario,function(err,salida){
+                accBBDD.partidasUsuario(req.session.IDUsuario,function(err,disponibles){
                 if(err)
                 {
                      res.status(400);
@@ -89,13 +90,33 @@ servidor.get("/verpartidas",function(req,res)
                 else
                 {
                     //Futura implementacion partidas antiguas
+                    ParDisponibles=disponibles;
                     //Cargamos la vista de partidas
+                    console.log(parPropias);
                     res.status(200);
                     res.render("verpartidas",{disponibles:parPropias,propias:ParDisponibles});
                 }
                 });
             }
         });
+    }
+    else
+    {
+        //Error por acceso denegado(sin login)
+        res.status(403);
+        res.render("accesodenegado",null);
+    }
+});
+servidor.get("/verpartidas",function(req,res)
+{
+    //variables para el paso al render
+    var parPropias;
+    var ParDisponibles;
+    //si existe login
+    if(req.session.IDUsuario!==null)
+    {
+        res.status(200);
+        res.render("nuevapartida",{errores:null});
     }
     else
     {
@@ -199,6 +220,7 @@ servidor.post("/loginusuario",facMulter.none(), function(req, res)
                 if(err)
                 {
                     res.status(400);
+                    console.log("Paso por el error");
                     res.render("error",{cabecera:"400-Error al logearse",
                                         mensaje: err.message,
                                         pila: err.stack,
@@ -208,6 +230,7 @@ servidor.post("/loginusuario",facMulter.none(), function(req, res)
                 {
                     res.status(200);
                     req.session.IDUsuario=salida;
+                    console.log("IDusuario:"+salida);
                     res.redirect("/verpartidas");
                 }
             });

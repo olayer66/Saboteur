@@ -32,7 +32,7 @@
                 <h1>Partidas Disponibles</h1>
                 <div id="partidasDisponibles">
                     
-                   <% disponibles.foreach(function(obj){%>
+                   <% array.forEach(function(obj){%>
                    <div id="fila">
                        <div id="cell"><%=obj.Nombre%></div>
                        <div id="cell"><%=obj.Num_Jugadores%></div>
@@ -44,7 +44,7 @@
                 </div>
                 <h1>Partidas Partidas creadas</h1>
                 <div id="partidasCreadas">
-                    <% propias.foreach(function(obj){%>
+                    <% propias.forEach(function(obj){%>
                    <div id="fila">
                        <div id="cell"><%=obj.Nombre%></div>
                        <div id="cell"><%=obj.Num_Jugadores%></div>
