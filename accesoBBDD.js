@@ -68,12 +68,11 @@ function crearUsuario(valores,callback)
 function conectar(datos,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
-    console.log("paso por conectar\n"+datos.nickLog+"\n"+datos.contraLog);
-    query='SELECT ID_usuario FROM usuarios WHERE Nick=\"?\" AND Contraseña=\"?\"';
+    console.log("paso por conectar");
+    query="SELECT ID_usuario FROM usuarios WHERE Nick=? AND Contraseña=?";
     valoresEntrada=[datos.nickLog,datos.contraLog];
     //Conectamos con la consulta requerida
     handleDisconnect(conexion);
-    console.log(query);
     conexion.connect(function(err)
     {
         if (err) 
@@ -83,7 +82,7 @@ function conectar(datos,callback)
         } 
         else 
         {
-            conexion.query(query,valoresEntrada,function(err, rows) 
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
             {
                 if (err) 
                 {
@@ -108,7 +107,7 @@ function estaConectado(ID,callback)
               "FROM usuarios"+
               "WHERE ID_usuario= ?";
         valoresEntrada=[ID];
-        conexion.query(query,valoresEntrada,function(err, rows) 
+        conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
             {
                 if (err) 
                 {
@@ -140,7 +139,7 @@ function modificarUsuario(IDUsuario,valores,callback)
                   "WHERE ID_usuario= ?";
             valoresEntrada=[valores.nick,valores.nombre,valores.apellidos,valores.contraseña,valores.fechaNac,valores.sexo,valores.imagen,IDUsuario];
             //Conectamos con la consulta requerida
-            conexion.query(query,valoresEntrada,function(err, rows) 
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
             {
                 if (err) 
                 {
@@ -166,12 +165,10 @@ function desconectar(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null && typeof(ID)==="number")
     {
-        query="UPDATE Usuarios"+
-              "SET logeado = false"+
-              "WHERE ID_Usuario= ?";
+        query="UPDATE Usuarios SET logeado = false WHERE ID_Usuario= ?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
-        conexion.query(query,valoresEntrada,function(err, rows) 
+        conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
         {
             if (err) 
             {
@@ -211,7 +208,7 @@ function mostrarUsuario(ID,callback)
             else 
             {
                 console.log("Row del usuario:\n"+rows[0]);
-                //callback(null,rows[0].ID_usuario);
+                callback(null,rows[0].ID_usuario);
                 conexion.end();
             }
         });
@@ -267,7 +264,7 @@ function devolverIDPartida(nombre,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
     console.log("paso por devolverIDPartida");
-    query='SELECT ID_partida FROM Partidas WHERE Nombre=\"?\"';
+    query='SELECT ID_partida FROM Partidas WHERE Nombre=?';
     valoresEntrada=[nombre];
     handleDisconnect(conexion);
     //Conectamos con la consulta requerida
@@ -280,7 +277,7 @@ function devolverIDPartida(nombre,callback)
         } 
         else 
         {
-            conexion.query(query,valoresEntrada,function(err, rows) 
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
                     {
                         if (err) 
                         {
@@ -315,7 +312,7 @@ function mostrarPartida(ID,callback)
         } 
         else 
         {
-            conexion.query(query,valoresEntrada,function(err, rows) 
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
                     {
                         if (err) 
                         {
@@ -354,7 +351,7 @@ function borrarPartida(ID,callback)
         } 
         else 
         {
-            conexion.query(query,valoresEntrada,function(err, rows) 
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
                     {
                         if (err) 
                         {
@@ -381,8 +378,9 @@ function partidasPropias(ID,callback)
     console.log("paso por partidasPropias");
     if(ID!==null)
     {
-        query="SELECT * FROM Partidas WHERE Creador= \"?\"";
-         valoresEntrada=[ID];
+        query="SELECT * FROM Partidas WHERE Creador=?";
+        valoresEntrada=[ID];
+        console.log(mysql.format(query,valoresEntrada));
         //Conectamos con la consulta requerida
         handleDisconnect(conexion);
         conexion.connect(function(err)
@@ -394,7 +392,7 @@ function partidasPropias(ID,callback)
             } 
             else 
             {
-                conexion.query(query,valoresEntrada,function(err, rows) 
+                conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
                 {
                     if (err) 
                     {
@@ -403,7 +401,6 @@ function partidasPropias(ID,callback)
                     } 
                     else 
                     {
-                        console.log("ROWS: "+rows);
                         callback(null,rows);                      
                         conexion.end();
                     }
@@ -435,7 +432,7 @@ function asignarUsuarioPartida(IDUsuario,IDPartida,Roll,callback)
         } 
         else 
         {
-            conexion.query(query,valoresEntrada,function(err, rows) 
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
                     {
                         if (err) 
                         {
@@ -462,8 +459,9 @@ function partidasUsuarioDisponibles(ID,callback)
     console.log("paso por partidasUsuarioDisponibles");
     if(ID!==null && typeof(ID)==="number")
     {
-        query="SELECT ID_Partida,Tipo_Jugador FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> \"?\" AND A.ID_Partida=B_ID_Partida AND B.Estado_Partida=\"0\"";
+        query="SELECT ID_Partida,Tipo_Jugador FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> ? AND A.ID_Partida=B_ID_Partida AND B.Estado_Partida=0";
         valoresEntrada=[ID];
+        console.log(mysql.format(query,valoresEntrada));
         //Conectamos con la consulta requerida
         handleDisconnect(conexion);
         conexion.connect(function(err)
@@ -475,7 +473,7 @@ function partidasUsuarioDisponibles(ID,callback)
             } 
             else 
             {
-                conexion.query(query,valoresEntrada,function(err, rows) 
+                conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
                 {
                     if (err) 
                     {
@@ -501,9 +499,7 @@ function partidasUsuario(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null && typeof(ID)==="number")
     {
-        query="INSERT"+
-              "FROM Asignacion_Partidas AS A, Partidas AS B"+
-              "WHERE ID_Usuario= ?";
+        query="SELECT * FROM Asignacion_Partidas AS A, Partidas AS B WHERE ID_Usuario=?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
@@ -515,7 +511,7 @@ function partidasUsuario(ID,callback)
         } 
         else 
         {
-            conexion.query(query,valoresEntrada,function(err, rows) 
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
                     {
                         if (err) 
                         {
@@ -620,9 +616,7 @@ function borrarUsuarioDePartida(valores,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(valores!==null)
     {
-        query="DELETE FROM Asignacion_Partidas"+
-              "WHERE ID_Partida= ?"+
-              "AND ID_Usuario= ?";
+        query="DELETE FROM Asignacion_Partidas WHERE ID_Partida=? AND ID_Usuario= ?";
         valoresEntrada=[valores.partida,valores.usuario];
        //Conectamos con la consulta requerida
        conexion.connect(function(err)
@@ -634,7 +628,7 @@ function borrarUsuarioDePartida(valores,callback)
         } 
         else 
         {
-            conexion.query(query,valoresEntrada,function(err, rows) 
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
                     {
                         if (err) 
                         {
