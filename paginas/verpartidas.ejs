@@ -20,7 +20,7 @@
     		<ul>
                     <li id="boton"><a href="desconectar"> <img id="imgBoton" src="images/piedra_cerrar_sesion.png" alt="Cerrar sesion"></a></li>
                     <li id="boton"><a href="verpartidas"> <img id="imgBoton" src="images/piedra_ver_partidas.png"  alt="Ver partidas"> </a></li>
-                    <li id="boton"><a href="crearPartida"><img id="imgBoton" src="images/piedra_nueva_partida.png" alt="Crear partida"></a></li>
+                    <li id="boton"><a href="crearpartida"><img id="imgBoton" src="images/piedra_nueva_partida.png" alt="Crear partida"></a></li>
                 </ul>
             </div>
         </div>
@@ -32,7 +32,7 @@
                 <h1>Partidas Disponibles</h1>
                 <div id="partidasDisponibles">
                     
-                   <% array.forEach(function(obj){%>
+                   <% disponibles.forEach(function(obj){%>
                    <div id="fila">
                        <div id="cell"><%=obj.Nombre%></div>
                        <div id="cell"><%=obj.Num_Jugadores%></div>
@@ -42,7 +42,7 @@
                    </div> 
                    <%});%> 
                 </div>
-                <h1>Partidas Partidas creadas</h1>
+                <h1>Partidas creadas</h1>
                 <div id="partidasCreadas">
                     <% propias.forEach(function(obj){%>
                    <div id="fila">
@@ -54,7 +54,7 @@
                    </div> 
                    <%});%>
                 </div>
-                <h1>Partidas temicadas</h1>
+                <h1>Partidas terminadas</h1>
                 <div id="partidasTerminadas">
                     
                 </div>

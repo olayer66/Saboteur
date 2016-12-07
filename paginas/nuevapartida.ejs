@@ -40,17 +40,23 @@
                 </div>
                 <%}%>
                 <div id="tablaNuevoUsuario">
-                    <form method="POST" action="/loginusuario" enctype="multipart/form-data">
+                    <form method="POST" action="/nuevapartida" enctype="multipart/form-data">
                     <div id="nick">
                         <div id="Cell">
-                            <label for="formNombre">Apodo:</label>
+                            <label for="formNombre">Nombre de partida:</label>
                             <input type="text" name="nombrePartida" id="formNombre" required>
                         </div>
                     </div>
                     <div id="contrasenia">
                         <div id="Cell">
-                            <label for="formNumJug">Contraseña:</label>
-                            <input type="range" name="numJugPartida" id="formNumJug" min="3" max="7" required>
+                            <label for="formNumJug">Numero de Jugadores:</label>
+                            <select name="numJugPartida" id="formNumJug" required>
+                                <option value="3" selected="selected" >3</option>
+                                <option value="4" >4</option>
+                                <option value="5" >5</option>
+                                <option value="6" >6</option>
+                                <option value="7" >7</option>
+                            </select>
                         </div>
                     </div>
                     <div id="nuevoEnviar">

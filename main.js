@@ -11,6 +11,7 @@ var session = require("express-session");
 var mysqlSession = require("express-mysql-session");
 //Craga de modulos personalizados
 var accBBDD =require("./accesoBBDD");
+var controlPartidas=require("./controlPartidas");
 //Variables
 var facMulter= multer({ storage: multer.memoryStorage() });
 var recEstaticos= path.join(__dirname, "static");
@@ -107,11 +108,8 @@ servidor.get("/verpartidas",function(req,res)
         res.render("accesodenegado",null);
     }
 });
-servidor.get("/verpartidas",function(req,res)
+servidor.get("/crearpartida",function(req,res)
 {
-    //variables para el paso al render
-    var parPropias;
-    var ParDisponibles;
     //si existe login
     if(req.session.IDUsuario!==null)
     {
@@ -173,7 +171,7 @@ servidor.post("/nuevousuario",facMulter.single("imgPerfil"), function(req, res)
                     res.render("error",{cabecera:"400-Error al crear la cuenta",
                                         mensaje: err.message,
                                         pila: err.stack,
-                                        pagina:"nuevousuario"});
+                                        pagina:"volverusuario"});
                 }
                 else
                 {
@@ -224,7 +222,7 @@ servidor.post("/loginusuario",facMulter.none(), function(req, res)
                     res.render("error",{cabecera:"400-Error al logearse",
                                         mensaje: err.message,
                                         pila: err.stack,
-                                        pagina:"loginusuario"});
+                                        pagina:"volverlogin"});
                 }
                 else
                 {
@@ -243,6 +241,65 @@ servidor.post("/loginusuario",facMulter.none(), function(req, res)
     });
 });
 
+//POST de crear partida
+servidor.post("/nuevapartida",facMulter.none(), function(req, res) 
+{
+    //control de contenido    
+        //Campos vacios
+            req.checkBody("nombrePartida","El campo nick no puede estar vacio").notEmpty();
+            req.checkBody("numJugPartida","El campo contraseña no puede estar vacio").notEmpty();
+        //Control de tipos de datos
+            req.checkBody("nombePartida","El campo nick solo puede contener letras y numeros").matches(/^[A-Z0-9]*$/i);
+            req.checkBody("numjugPartida","El campo contraseña solo puede contener letras y numeros").matches(/^[3-7]*$/i);
+ 
+    //Validacion del contenido
+    req.getValidationResult().then(function(result) 
+    {
+        if (result.isEmpty()) 
+        {
+            controlPartidas.crearPartida(req.session.IDUsuario,req.body,function(err,salida)
+            {
+                if(err)
+                {
+                    res.status(400);
+                    console.log("Paso por el error");
+                    res.render("error",{cabecera:"400-Error al crear la partida",
+                                        mensaje: err.message,
+                                        pila: err.stack,
+                                        pagina:"volverpartida"});
+                }
+                else
+                {
+                    res.status(200);
+                    req.session.IDUsuario=salida;
+                    console.log("IDusuario:"+salida);
+                    res.redirect("/verpartidas");
+                }
+            });
+        } 
+        else 
+        {
+             res.status(200);
+             res.redirect("/verpartidas");
+        }
+    });
+});
+//metodos POST para los botones del ejs de error
+servidor.post("/volverusuario", function(req, res) 
+{
+   res.status(200);
+   res.render("nuevousuario",null);
+});
+servidor.post("/volverlogin", function(req, res) 
+{
+   res.status(200);
+   res.render("loginusuario",null);
+});
+servidor.post("/volverpartida", function(req, res) 
+{
+   res.status(200);
+   res.render("nuevapartida",null);
+});
 servidor.post("/volvernuevo", function(req, res) 
 {
    res.status(200);

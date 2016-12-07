@@ -20,11 +20,12 @@ module.exports={
 };
 function crearPartida(IDUsuario,entrada,callback){
       
+      console.log("numero jugadores"+ entrada.numJugPartida);
       //rellenamos el objeto de la partida
       partida.nombre=entrada.nombrePartida;
-      partida.numMaxJugadores=entrada.numMaxJugadores;
+      partida.numMaxJugadores=entrada.numJugPartida;
       partida.creador=IDUsuario;
-      partida.numTurnos=calculaTurnos(entrada.numMaxJugadores);
+      partida.numTurnos=calculaTurnos(entrada.numJugPartida);
       if(partida.numTurnos===0)
           callback(new Error("Numero de Jugadores no comtenplado"),null);
       partida.fechaCreacion=calculaFecha();
@@ -59,7 +60,12 @@ function crearPartida(IDUsuario,entrada,callback){
 }
 function asignarUsuarioPartida(IDUsuario,IDPartida,callback)
 {
-    
+    accBBDD.asignarUsuarioPartida(IDusuario,IDPartida,null,function(err){
+        if(err)
+        {
+            callback(err,null);
+        }
+    });
 }
 /*===================================================FUNCIONES AUXILIARES==================================================*/
 function calculaTurnos(numJugadores)
