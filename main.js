@@ -60,44 +60,26 @@ servidor.get("/login",function(req,res)
 servidor.get("/verpartidas",function(req,res)
 {
     //variables para el paso al render
-    var parPropias;
-    var ParDisponibles;
     //si existe login
     if(req.session.IDUsuario!==null)
     {
         //Extraemos las partidas creada por el usuario
-        accBBDD.partidasPropias(req.session.IDUsuario,function(err,propias){
+        controlPartidas.verPartidasUsuario(req.session.IDUsuario,function(err,vista)
+        {
             if(err)
             {
-                 res.status(400);
-                  res.render("error",{cabecera:"400-Error al crear la cuenta",
-                                      mensaje: err.message,
-                                      pila: err.stack,
-                                      pagina:"verpartidas"});
+                res.status(400);
+                res.render("error",{cabecera:"400-Error al crear la cuenta",
+                                    mensaje: err.message,
+                                    pila: err.stack,
+                                    pagina:"verpartidas"});
             }
             else
             {
-                parPropias=propias;
-                //Extraemos las partidas disponibles en la que el usuario no este implicado
-                accBBDD.partidasUsuario(req.session.IDUsuario,function(err,disponibles){
-                if(err)
-                {
-                     res.status(400);
-                     res.render("error",{cabecera:"400-Error al crear la cuenta",
-                                         mensaje: err.message,
-                                         pila: err.stack,
-                                         pagina:"verpartidas"});
-                }
-                else
-                {
-                    //Futura implementacion partidas antiguas
-                    ParDisponibles=disponibles;
-                    //Cargamos la vista de partidas
-                    console.log(parPropias);
-                    res.status(200);
-                    res.render("verpartidas",{disponibles:parPropias,propias:ParDisponibles});
-                }
-                });
+                
+                //Cargamos la vista de partidas
+                res.status(200);
+                res.render("verpartidas",{partidas:vista});
             }
         });
     }
@@ -196,8 +178,6 @@ servidor.post("/volvernuevo", function(req, res)
 
 servidor.post("/loginusuario",facMulter.none(), function(req, res) 
 {
-    console.log(req.body.nickLog);
-    console.log(req.body.contraLog);
     //control de contenido    
         //Campos vacios
             req.checkBody("nickLog","El campo nick no puede estar vacio").notEmpty();
@@ -218,7 +198,6 @@ servidor.post("/loginusuario",facMulter.none(), function(req, res)
                 if(err)
                 {
                     res.status(400);
-                    console.log("Paso por el error");
                     res.render("error",{cabecera:"400-Error al logearse",
                                         mensaje: err.message,
                                         pila: err.stack,
@@ -228,7 +207,6 @@ servidor.post("/loginusuario",facMulter.none(), function(req, res)
                 {
                     res.status(200);
                     req.session.IDUsuario=salida;
-                    console.log("IDusuario:"+salida);
                     res.redirect("/verpartidas");
                 }
             });
@@ -257,12 +235,11 @@ servidor.post("/nuevapartida",facMulter.none(), function(req, res)
     {
         if (result.isEmpty()) 
         {
-            controlPartidas.crearPartida(req.session.IDUsuario,req.body,function(err,salida)
+            controlPartidas.crearPartida(req.session.IDUsuario,req.body,function(err)
             {
                 if(err)
                 {
                     res.status(400);
-                    console.log("Paso por el error");
                     res.render("error",{cabecera:"400-Error al crear la partida",
                                         mensaje: err.message,
                                         pila: err.stack,
@@ -271,8 +248,6 @@ servidor.post("/nuevapartida",facMulter.none(), function(req, res)
                 else
                 {
                     res.status(200);
-                    req.session.IDUsuario=salida;
-                    console.log("IDusuario:"+salida);
                     res.redirect("/verpartidas");
                 }
             });
@@ -288,22 +263,22 @@ servidor.post("/nuevapartida",facMulter.none(), function(req, res)
 servidor.post("/volverusuario", function(req, res) 
 {
    res.status(200);
-   res.render("nuevousuario",null);
+   res.render("nuevousuario",{errores:null});
 });
 servidor.post("/volverlogin", function(req, res) 
 {
    res.status(200);
-   res.render("loginusuario",null);
+   res.render("loginusuario",{errores:null});
 });
 servidor.post("/volverpartida", function(req, res) 
 {
    res.status(200);
-   res.render("nuevapartida",null);
+   res.render("nuevapartida",{errores:null});
 });
 servidor.post("/volvernuevo", function(req, res) 
 {
    res.status(200);
-   res.render("nuevousuario",null);
+   res.render("nuevousuario",{errores:null});
 });
 /*======================================INICIO DEL SERVIDOR==============================================*/
 //Abrimos el servidor a la escucha por el puerto 3000

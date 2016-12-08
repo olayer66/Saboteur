@@ -14,56 +14,121 @@ var partida= {
     ganador:null,
     numTurnos:null,
     fechaCreacion:null   
-}
+};
+var vista={
+    parEnJuego:null,
+    parDisponibles:null,
+    parPropias:null,
+    parTerminadas:null
+};
 module.exports={
-    crearPartida:crearPartida
+    crearPartida:crearPartida,
+    verPartidasUsuario:verPartidasUsuario
 };
 function crearPartida(IDUsuario,entrada,callback){
       
-      console.log("numero jugadores"+ entrada.numJugPartida);
       //rellenamos el objeto de la partida
       partida.nombre=entrada.nombrePartida;
       partida.numMaxJugadores=entrada.numJugPartida;
       partida.creador=IDUsuario;
       partida.numTurnos=calculaTurnos(entrada.numJugPartida);
       if(partida.numTurnos===0)
-          callback(new Error("Numero de Jugadores no comtenplado"),null);
+          callback(new Error("Numero de Jugadores no comtenplado"));
       partida.fechaCreacion=calculaFecha();
       //Llamamos a la BBDD para crear la partida
-      accBBDD.crearPartida(entrada,function(err,salida){
+      accBBDD.crearPartida(partida,function(err,salida){
           if(err)
           {
-              callback(err,null);
+              callback(err);
           }
           else
-          {
+          {            
               //Extraemos el ID de la partida creada
-              accBBDD.devolverIDPartida(partida.nombre,function(err,salida){
+              partida.IDPartida=salida.insertId;
+              //Asignamos al creador como primer jugador de la partida
+              console.log("ID partida: "+partida.IDPartida);
+              asignarUsuarioPartida(partida.IDPartida,partida.creador,function (err){
                   if(err)
                   {
-                      callback(err,null);
+                      callback(err);
                   }
                   else
                   {
-                      partida.IDPartida=salida;
-                  }
-              });
-              //Asignamos al creador como primer jugador de la partida
-              asignarUsuarioPartida(partida.creador,partida.IDPartida,function (err){
-                  if(err)
-                  {
-                      callback(err,null);
+                      console.log("partida creada y asignada");
+                      callback(null);
                   }
               });
           }
       });
 }
-function asignarUsuarioPartida(IDUsuario,IDPartida,callback)
+function verPartidasUsuario(IDUsuario,callback)
 {
-    accBBDD.asignarUsuarioPartida(IDusuario,IDPartida,null,function(err){
+    //Extraemos las partidas creada por el usuario
+        accBBDD.partidasPropias(IDUsuario,function(err,propias){
+            if(err)
+            {
+                 callback(err,null);
+            }
+            else
+            {
+                vista.parPropias=propias;
+                //Extraemos las partidas disponibles en la que el usuario no este implicado
+                accBBDD.partidasUsuarioDisponibles(IDUsuario,function(err,disponibles){
+                    if(err)
+                    {
+                         callback(err,null);
+                    }
+                    else
+                    {
+                        vista.parDisponibles=disponibles;
+                        accBBDD.partidasUsuarioTerminadas(IDUsuario,function(err,terminadas){
+                        if(err)
+                        {
+                             callback(err,null);
+                        }
+                        else
+                        {
+                            vista.parTerminadas=terminadas;
+                            accBBDD.partidasUsuarioEnJuego(IDUsuario,function(err,enJuego){
+                                if(err)
+                                {
+                                     callback(err,null);
+                                }
+                                else
+                                {
+                                    vista.parEnJuego=enJuego;
+                                    callback(null,vista);
+                                }
+                            });
+                        }
+                        });
+                    }
+                });
+            }
+        });
+}
+//Asignacion de partidas
+function asignarUsuarioPartida(IDPartida,IDUsuario,callback)
+{
+    accBBDD.asignarUsuarioPartida(IDPartida,IDUsuario,null,function(err){
         if(err)
         {
-            callback(err,null);
+            callback(err);
+        }
+        else
+        {
+            accBBDD.añadirUsuarioPartida(IDPartida,function(err)
+            {
+                if(err)
+                {
+                    callback(err);
+                }
+                else
+                {
+
+                    callback(null);
+                }
+            });
         }
     });
 }
@@ -72,19 +137,19 @@ function calculaTurnos(numJugadores)
 {
     switch (numJugadores)
     {
-        case 3:
-            return 50;
+        case "3":
+            return 50;   
             break;
-        case 4:
+        case "4":
             return 45;
             break;
-        case 5:
+        case "5":
             return 40;
             break;
-        case 6:
+        case "6":
             return 40;
             break;
-        case 7:
+        case "7":
             return 35;
             break;
         default:
@@ -94,6 +159,7 @@ function calculaTurnos(numJugadores)
 }
 function calculaFecha()
 {
-    return Date.getDay()+"/"+Date.getMonth()+"/"+ Date.getYear();
+    var fecha= new Date();
+    return fecha.getDay()+"/"+fecha.getMonth()+"/"+ fecha.getFullYear();
 }
 

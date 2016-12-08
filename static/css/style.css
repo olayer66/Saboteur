@@ -70,7 +70,7 @@ body{
 }
 .entrada{
     background-color: #F7FAC3;
-    opacity: 0.7;
+    
     padding: 10px;
     color: #000000;
     position: absolute;
@@ -89,7 +89,7 @@ body{
     background-color: #F7FAC3;
     border:silver 3px inset;
 }
-<!--Tabla para el formulario de nuevo usuario-->
+
 #tabla{
     display:table;
     width:auto;
@@ -119,4 +119,35 @@ body{
 .cajaErrores{
     background-color: #FE9A2E;
     border:silver 3px inset;
+}
+
+#tablaPartidas{
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: auto;
+    text-align: center;
+}
+#tablaPartidas td, #tablaPartidas th {
+    border: 1px solid #ddd;
+    padding: 0px;
+    text-align: center;
+}
+
+#tablaPartidas tr:nth-child(even){background-color: #E99A2A;}
+
+#tablaPartidas tr:hover {background-color: #F8D098;}
+
+#tablaPartidas th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: left;
+    background-color: #623C06;
+    color: white;
+    text-align: center;
+}
+#imgtabla{
+    width: 100px;
+    height: 50px;
 }

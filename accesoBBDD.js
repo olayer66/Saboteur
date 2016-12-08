@@ -9,8 +9,6 @@ var valoresEntrada;
 module.exports={
     //Usuarios
     conectar: conectar,
-    desconectar: desconectar,
-    estaConectado: estaConectado,
     crearUsuario: crearUsuario,
     modificarUsuario: modificarUsuario,
     mostrarUsuario: mostrarUsuario,
@@ -20,10 +18,12 @@ module.exports={
     borrarPartida: borrarPartida,
     partidasPropias:partidasPropias,
     devolverIDPartida:devolverIDPartida,
+    añadirUsuarioPartida:añadirUsuarioPartida,
     //Asignacion de partidas
     asignarUsuarioPartida:asignarUsuarioPartida,
-    partidasUsuario: partidasUsuario,
     partidasUsuarioDisponibles:partidasUsuarioDisponibles,
+    partidasUsuarioTerminadas:partidasUsuarioTerminadas,
+    partidasUsuarioEnJuego:partidasUsuarioEnJuego,
     usuariosPartida:usuariosPartida,
     borrarAsignacionPartidas:borrarAsignacionPartidas,
     borrarUsuarioDePartida:borrarUsuarioDePartida
@@ -68,7 +68,6 @@ function crearUsuario(valores,callback)
 function conectar(datos,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
-    console.log("paso por conectar");
     query="SELECT ID_usuario FROM usuarios WHERE Nick=? AND Contraseña=?";
     valoresEntrada=[datos.nickLog,datos.contraLog];
     //Conectamos con la consulta requerida
@@ -97,35 +96,6 @@ function conectar(datos,callback)
             }); 
         }    
     });
-}
-function estaConectado(ID,callback)
-{
-    var conexion = mysql.createConnection(config.conexionBBDD);
-    if(ID!==null && typeof(ID)==="number")
-    {
-        query="SELECT Logeado"+
-              "FROM usuarios"+
-              "WHERE ID_usuario= ?";
-        valoresEntrada=[ID];
-        conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
-            {
-                if (err) 
-                {
-                    console.error(err);
-                    callback(err,null);
-                } 
-                else 
-                {
-                    console.log("Row del usuario:\n"+rows[0]);
-                    //callback(null,rows[0].ID_usuario);
-                    conexion.end();
-                }
-            });
-    }
-    else
-    {
-        callback(null);
-    }
 }
 function modificarUsuario(IDUsuario,valores,callback)
 {
@@ -160,14 +130,14 @@ function modificarUsuario(IDUsuario,valores,callback)
         }
     }
 }
-function desconectar(ID,callback)
+function mostrarUsuario(ID,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null && typeof(ID)==="number")
     {
-        query="UPDATE Usuarios SET logeado = false WHERE ID_Usuario= ?";
+        query="SELECT * FROM Usuarios WHERE ID_usuario=?";
         valoresEntrada=[ID];
-        //Conectamos con la consulta requerida
+         //Conectamos con la consulta requerida
         conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
         {
             if (err) 
@@ -177,38 +147,7 @@ function desconectar(ID,callback)
             } 
             else 
             {
-                console.log("Row del usuario:\n"+rows[0]);
-                //callback(null,rows[0].ID_usuario);
-                conexion.end();
-            }
-        });
-    }
-    else
-    {
-        callback(null);
-    }
-}
-function mostrarUsuario(ID,callback)
-{
-    var conexion = mysql.createConnection(config.conexionBBDD);
-    if(ID!==null && typeof(ID)==="number")
-    {
-        query="SELECT *"+
-              "FROM Usuarios"+
-              "WHERE ID_usuario= ?";
-        valoresEntrada=[ID];
-         //Conectamos con la consulta requerida
-        conexion.query(query,valoresEntrada,function(err, rows) 
-        {
-            if (err) 
-            {
-                console.error(err);
-                callback(err,null);
-            } 
-            else 
-            {
-                console.log("Row del usuario:\n"+rows[0]);
-                callback(null,rows[0].ID_usuario);
+                callback(null,rows);
                 conexion.end();
             }
         });
@@ -228,32 +167,32 @@ function crearPartida(valores,callback)
     {
         query="INSERT INTO Partidas(Nombre,Creador,Num_Max_Jugadores,Num_turnos,Fecha_Creacion)"+
               "VALUES (?,?,?,?,?)";      
-        valoresEntrada=[valores.Nombre,valores.creador,valores.numMax,valores.numTurnos,valores.fecha];
+        valoresEntrada=[valores.nombre,valores.creador,valores.numMaxJugadores,valores.numTurnos,valores.fechaCreacion];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
-    {
-        if (err) 
         {
-            console.error(err);
-            callback(err,null);
-        } 
-        else 
-        {
-            conexion.query(query,valoresEntrada,function(err, rows) 
+            if (err) 
+            {
+                console.error(err);
+                callback(err,null);
+            } 
+            else 
+            {
+                conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
+                {
+                    if (err) 
                     {
-                        if (err) 
-                        {
-                            console.error(err);
-                            callback(err,null);
-                        } 
-                        else 
-                        {
-                            callback(null,rows);
-                        }
-                    });
-        }
-        conexion.end();
-    });
+                        console.error(err);
+                        callback(err,null);
+                    } 
+                    else 
+                    {
+                        callback(null,rows);
+                        conexion.end();
+                    }
+                });
+            }   
+        });
     }
     else
     {
@@ -262,12 +201,13 @@ function crearPartida(valores,callback)
 }
 function devolverIDPartida(nombre,callback)
 {
+    console.log("Nombre: "+nombre);
     var conexion = mysql.createConnection(config.conexionBBDD);
-    console.log("paso por devolverIDPartida");
     query='SELECT ID_partida FROM Partidas WHERE Nombre=?';
     valoresEntrada=[nombre];
     handleDisconnect(conexion);
     //Conectamos con la consulta requerida
+    console.log(mysql.format(query,valoresEntrada));
     conexion.connect(function(err)
     {
         if (err) 
@@ -278,17 +218,18 @@ function devolverIDPartida(nombre,callback)
         else 
         {
             conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
-                    {
-                        if (err) 
-                        {
-                            console.error(err);
-                            callback(err,null);
-                        } 
-                        else 
-                        {
-                            callback(null,rows);
-                        }
-                    });
+            {
+                if (err) 
+                {
+                    console.error(err);
+                    callback(err,null);
+                } 
+                else 
+                {
+                    console.log("accBBDD: "+rows[0].ID_Partida);
+                    callback(null,rows[0].ID_Partida);
+                }
+            });
         }
         conexion.end();
     });
@@ -298,9 +239,7 @@ function mostrarPartida(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null && typeof(ID)==="number")
     {
-        query="SELECT *"+
-              "FROM Partidas"+
-              "WHERE ID_partida= ?";
+        query="SELECT * FROM Partidas WHERE ID_partida= ?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
@@ -338,8 +277,7 @@ function borrarPartida(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null && typeof(ID)!=="number")
     {
-        query="DELETE FROM Partidas"+
-              "WHERE ID_partida= ?";
+        query="DELETE FROM Partidas WHERE ID_partida= ?";
          valoresEntrada=[ID];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
@@ -375,13 +313,12 @@ function borrarPartida(ID,callback)
 function partidasPropias(ID,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
-    console.log("paso por partidasPropias");
     if(ID!==null)
     {
-        query="SELECT * FROM Partidas WHERE Creador=?";
+        query="SELECT * FROM partidas WHERE Creador=?";
         valoresEntrada=[ID];
-        console.log(mysql.format(query,valoresEntrada));
         //Conectamos con la consulta requerida
+        console.log(mysql.format(query,valoresEntrada));
         handleDisconnect(conexion);
         conexion.connect(function(err)
         {
@@ -402,10 +339,10 @@ function partidasPropias(ID,callback)
                     else 
                     {
                         callback(null,rows);                      
-                        conexion.end();
                     }
                 });
             }
+            conexion.end();
         });    
     }
     else
@@ -413,15 +350,38 @@ function partidasPropias(ID,callback)
         callback(new Error("ID de usuario no valido"),null);
     }
 }
+function añadirUsuarioPartida(ID,callback)
+{
+   var conexion = mysql.createConnection(config.conexionBBDD);
+    if(ID!==null && typeof(ID)==="number")
+    {
+        query="UPDATE partidas SET Num_Jugadores=Num_jugadores+1 WHERE ID_partida= ?";
+        valoresEntrada=[ID];
+        //Conectamos con la consulta requerida
+        conexion.query(mysql.format(query,valoresEntrada),function(err) 
+        {
+            if (err) 
+            {
+                console.error(err);
+                callback(err);
+            } 
+            else 
+            {
+                callback(null);
+                conexion.end();
+            }
+        });
+    }
+} 
 //Funciones sobre la asignacion de partidas
-function asignarUsuarioPartida(IDUsuario,IDPartida,Roll,callback)
+function asignarUsuarioPartida(IDPartida,IDUsuario,Roll,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(IDUsuario!==null && typeof (IDUsuario)==="number" && IDPartida!==null && typeof (IDPartida)==="number")
     {
         query="INSERT INTO Asignacion_Partidas(ID_Partida,ID_Usuario,Tipo_Jugador)"+
               "VALUES (?,?,?)";      
-        valoresEntrada=[IDUsuario,IDPartida,Roll];
+        valoresEntrada=[IDPartida,IDUsuario,Roll];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
     {
@@ -456,12 +416,11 @@ function asignarUsuarioPartida(IDUsuario,IDPartida,Roll,callback)
 function partidasUsuarioDisponibles(ID,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
-    console.log("paso por partidasUsuarioDisponibles");
     if(ID!==null && typeof(ID)==="number")
     {
-        query="SELECT ID_Partida,Tipo_Jugador FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> ? AND A.ID_Partida=B_ID_Partida AND B.Estado_Partida=0";
+        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> ? AND A.ID_Partida=B.ID_Partida AND B.Estado_Partida=0";
         valoresEntrada=[ID];
-        console.log(mysql.format(query,valoresEntrada));
+        
         //Conectamos con la consulta requerida
         handleDisconnect(conexion);
         conexion.connect(function(err)
@@ -494,38 +453,80 @@ function partidasUsuarioDisponibles(ID,callback)
         callback(new Error("El ID de usuario no es valido"),null);
     }
 }
-function partidasUsuario(ID,callback)
+function partidasUsuarioTerminadas(ID,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null && typeof(ID)==="number")
     {
-        query="SELECT * FROM Asignacion_Partidas AS A, Partidas AS B WHERE ID_Usuario=?";
+        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> ? AND A.ID_Partida=B.ID_Partida AND B.Estado_Partida=2";
         valoresEntrada=[ID];
+        
         //Conectamos con la consulta requerida
+        handleDisconnect(conexion);
         conexion.connect(function(err)
-    {
-        if (err) 
         {
-            console.error(err);
-            callback(err,null);
-        } 
-        else 
-        {
-            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
+            if (err) 
+            {
+                console.error(err);
+                callback(err,null);
+            } 
+            else 
+            {
+                conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
+                {
+                    if (err) 
                     {
-                        if (err) 
-                        {
-                            console.error(err);
-                            callback(err,null);
-                        } 
-                        else 
-                        {
-                            callback(null,rows);
-                        }
-                    });
-        }
-        conexion.end();
-    }); 
+                        console.error(err);
+                        callback(err,null);
+                    } 
+                    else 
+                    {
+                        callback(null,rows);
+                        conexion.end();
+                    }
+                });
+            }      
+        }); 
+    }
+    else
+    {
+        callback(new Error("El ID de usuario no es valido"),null);
+    }
+}
+function partidasUsuarioEnJuego(ID,callback)
+{
+    var conexion = mysql.createConnection(config.conexionBBDD);
+    if(ID!==null && typeof(ID)==="number")
+    {
+        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> ? AND A.ID_Partida=B.ID_Partida AND B.Estado_Partida=1";
+        valoresEntrada=[ID];
+        
+        //Conectamos con la consulta requerida
+        handleDisconnect(conexion);
+        conexion.connect(function(err)
+        {
+            if (err) 
+            {
+                console.error(err);
+                callback(err,null);
+            } 
+            else 
+            {
+                conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
+                {
+                    if (err) 
+                    {
+                        console.error(err);
+                        callback(err,null);
+                    } 
+                    else 
+                    {
+                        callback(null,rows);
+                        conexion.end();
+                    }
+                });
+            }      
+        }); 
     }
     else
     {

@@ -29,34 +29,110 @@
 	<!--Cuerpo-->
         <div class="cuerpo">           
             <div class="entrada">
+                <h1>Partidas En juego</h1>
+                <div id="partidasEnJuego">
+                    <Table id="tablaPartidas">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Jugadores</th>
+                            <th>Jug. maximos</th>
+                            <th>Turnos restantes</th>
+                            <th>Turnos</th>
+                            <th>Fecha</th>
+                        </tr>
+                        <% partidas.parEnJuego.forEach(function(obj){%>
+                        <tr>
+                            <td><%=obj.Nombre%></td>
+                            <td><%=obj.Num_Jugadores%></td>
+                            <td><%=obj.Num_Max_Jugadores%></td>
+                            <td><%=obj.Turnos%></td>
+                            <td><%=obj.numTurnos%></td>
+                            <td><%=obj.Fecha_Creacion%></td>
+                            <td>
+                                <form method="POST" action="/unirsepartida" enctype="multipart/form-data">
+                                    <input type="hidden" value="<%=obj.IDPartida%>" name="oculto">
+                                    <input type="image" src="images/piedra_entrar.png" alt="Submit Form" id="imgtabla">
+                                </form>
+                            </td>
+                        </tr> 
+                   <%});%> 
+                    </table>
+                </div>
                 <h1>Partidas Disponibles</h1>
                 <div id="partidasDisponibles">
-                    
-                   <% disponibles.forEach(function(obj){%>
-                   <div id="fila">
-                       <div id="cell"><%=obj.Nombre%></div>
-                       <div id="cell"><%=obj.Num_Jugadores%></div>
-                       <div id="cell"><%=obj.Num_Max_Jugadores%></div>
-                       <div id="cell"><%=obj.Turnos%></div>
-                       <div id="cell"><%=obj.Fecha_Creacion%></div>                      
-                   </div> 
+                    <Table id="tablaPartidas">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Jugadores</th>
+                            <th>Jug. maximos</th>
+                            <th>Turnos</th>
+                            <th>Fecha</th>
+                        </tr>
+                        <% partidas.parDisponibles.forEach(function(obj){%>
+                        <tr>
+                            <td><%=obj.Nombre%></td>
+                            <td><%=obj.Num_Jugadores%></td>
+                            <td><%=obj.Num_Max_Jugadores%></td>
+                            <td><%=obj.numTurnos%></td>
+                            <td><%=obj.Fecha_Creacion%></td>
+                            <td>
+                                <form method="POST" action="/unirsepartida" enctype="multipart/form-data">
+                                    <input type="hidden" value="<%=obj.IDPartida%>" name="oculto">
+                                    <input type="image" src="images/piedra_unirse.png" alt="Submit Form" id="imgtabla">
+                                </form>
+                            </td>
+                        </tr> 
                    <%});%> 
+                    </table>
                 </div>
                 <h1>Partidas creadas</h1>
                 <div id="partidasCreadas">
-                    <% propias.forEach(function(obj){%>
-                   <div id="fila">
-                       <div id="cell"><%=obj.Nombre%></div>
-                       <div id="cell"><%=obj.Num_Jugadores%></div>
-                       <div id="cell"><%=obj.Num_Max_Jugadores%></div>
-                       <div id="cell"><%=obj.Turnos%></div>
-                       <div id="cell"><%=obj.Fecha_Creacion%></div>                      
-                   </div> 
-                   <%});%>
+                    <Table id="tablaPartidas">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Jugadores</th>
+                            <th>Jug. maximos</th>
+                            <th>Turnos</th>
+                            <th>Fecha</th>
+                        </tr>
+                        <% partidas.parPropias.forEach(function(obj){%>
+                        <tr>
+                            <td><%=obj.Nombre%></td>
+                            <td><%=obj.Num_Jugadores%></td>
+                            <td><%=obj.Num_Max_Jugadores%></td>
+                            <td><%=obj.numTurnos%></td>
+                            <td><%=obj.Fecha_Creacion%></td>
+                            
+                        </tr> 
+                   <%});%> 
+                    </table>
                 </div>
                 <h1>Partidas terminadas</h1>
                 <div id="partidasTerminadas">
-                    
+                 <Table id="tablaPartidas">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Jugadores</th>
+                            <th>Ganador</th>
+                            <th>Turnos</th>
+                            <th>Fecha</th>
+                        </tr>
+                        <% partidas.parTerminadas.forEach(function(obj){%>
+                        <tr>
+                            <td><%=obj.Nombre%></td>
+                            <td><%=obj.Num_Jugadores%></td>
+                            <td><%=obj.Ganador%></td>
+                            <td><%=obj.Turnos%></td>
+                            <td><%=obj.Fecha_Creacion%></td>  
+                            <td>
+                                <form method="POST" action="/unirsepartida" enctype="multipart/form-data">
+                                    <input type="hidden" value="<%=obj.IDPartida%>" name="oculto">
+                                    <input type="image" src="images/piedra_ver.png" alt="Submit Form" id="imgtabla">
+                                </form>
+                            </td>
+                        </tr> 
+                   <%});%> 
+                    </table>   
                 </div>
             </div>
         </div>
