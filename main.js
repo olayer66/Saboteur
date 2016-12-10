@@ -42,11 +42,13 @@ servidor.use(expressValidator());
 servidor.use(middlewareSession);
 //funcionalidad del servidor
 //Metodos GET
+////GET sin login
 servidor.get("/",function(req,res)
 {
     res.status(200);
-    res.render("inicio",{IDUsuario:null});
+    res.render("inicio",{IDUsuario:req.session.IDUsuario});
 });
+
 servidor.get("/nuevousuario",function(req,res)
 {
     res.status(200);
@@ -57,6 +59,7 @@ servidor.get("/login",function(req,res)
     res.status(200);
     res.render("loginusuario",{errores:null});
 });
+//GET con login
 servidor.get("/verpartidas",function(req,res)
 {
     //variables para el paso al render
@@ -104,6 +107,12 @@ servidor.get("/crearpartida",function(req,res)
         res.status(403);
         res.render("accesodenegado",null);
     }
+});
+servidor.get("/desconectar",function(req,res)
+{
+    res.status(200);
+    req.session.destroy();
+    res.render("inicio",{IDUsuario:null});
 });
 //Metodos POST
 servidor.post("/nuevousuario",facMulter.single("imgPerfil"), function(req, res) 
@@ -207,6 +216,10 @@ servidor.post("/loginusuario",facMulter.none(), function(req, res)
                 {
                     res.status(200);
                     req.session.IDUsuario=salida;
+                    //Caducidad de la sesion 1 hora
+                    var hour = 3600000;
+                    req.session.cookie.expires = new Date(Date.now() + hour);
+                    req.session.cookie.maxAge = hour;
                     res.redirect("/verpartidas");
                 }
             });
