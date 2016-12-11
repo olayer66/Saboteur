@@ -2,7 +2,9 @@
 Creacion, modficacion y eliminacion de partidas.
  */
 "use strict";
+var _ = require("underscore");
 var accBBDD =require("./accesoBBDD");
+var cartas= require("./cartas");
 var partida= {
     IDPartida:null,
     nombre:null,
@@ -92,7 +94,8 @@ function crearPartida(IDUsuario,entrada,callback)
 function verPartidasUsuario(IDUsuario,callback)
 {
     //Extraemos las partidas creada por el usuario
-        accBBDD.partidasPropias(IDUsuario,function(err,propias){
+        accBBDD.partidasPropias(IDUsuario,function(err,propias)
+        {
             if(err)
             {
                  callback(err,null);
@@ -101,47 +104,47 @@ function verPartidasUsuario(IDUsuario,callback)
             {
                 vista.parPropias=propias;
                 //Extraemos las partidas disponibles en la que el usuario no este implicado
-                accBBDD.partidasUsuarioDisponibles(IDUsuario,function(err,disponibles){
-                    if(err)
+                accBBDD.partidasUsuarioTerminadas(IDUsuario,function(err,terminadas){
+                if(err)
+                {
+                     callback(err,null);
+                }
+                else
+                {
+                    vista.parTerminadas=terminadas;
+                    accBBDD.partidasUsuarioEnJuego(IDUsuario,function(err,enJuego)
                     {
-                         callback(err,null);
-                    }
-                    else
-                    {
-                        vista.parDisponibles=disponibles;
-                        accBBDD.partidasUsuarioTerminadas(IDUsuario,function(err,terminadas){
                         if(err)
                         {
                              callback(err,null);
                         }
                         else
                         {
-                            vista.parTerminadas=terminadas;
-                            accBBDD.partidasUsuarioEnJuego(IDUsuario,function(err,enJuego)
-                            {
+                            vista.parEnJuego=enJuego;
+                            accBBDD.partidasUsuarioEnEspera(IDUsuario,function(err,enEspera){
                                 if(err)
                                 {
                                      callback(err,null);
                                 }
                                 else
                                 {
-                                    vista.parEnJuego=enJuego;
-                                    accBBDD.partidasUsuarioEnEspera(IDUsuario,function(err,enEspera){
+                                    vista.parEspera=enEspera;
+                                    partidasDisponibles(IDUsuario,function(err,parDisponibles){
                                         if(err)
                                         {
-                                             callback(err,null);
+                                            callback(err,null);
                                         }
                                         else
                                         {
-                                            vista.parEspera=enEspera;
+                                            vista.parDisponibles=parDisponibles;
                                             callback(null,vista);
-                                        }
-                                    });
+                                        }    
+                                    });                                                              
                                 }
                             });
                         }
-                        });
-                    }
+                    });
+                }
                 });
             }
         });
@@ -190,6 +193,7 @@ function borrarPartida(IDPartida,callback)
         }
     });
 }
+
 //Asignacion de partidas
 function asignarUsuarioPartida(IDPartida,IDUsuario,callback)
 {
@@ -208,8 +212,36 @@ function asignarUsuarioPartida(IDPartida,IDUsuario,callback)
                 }
                 else
                 {
-
-                    callback(null);
+                    accBBDD.devolverJugadoresPartida(IDPartida,function(err,salida)
+                    {
+                        if(err)
+                        {
+                            callback(err);
+                        }
+                        else
+                        {
+                            console.log("llego aqui:"+IDPartida);
+                            console.log("llego aqui 2:"+salida[0].Num_Jugadores+"   "+salida[0].Num_Max_Jugadores);
+                            if(salida[0].Num_Jugadores===salida[0].Num_Max_Jugadores)
+                            {
+                                console.log("llego aqui 3");
+                                generarPartida(IDPartida,salida[0].Num_Max_Jugadores,function (err){
+                                    if(err)
+                                    {
+                                        callback(err);
+                                    }
+                                    else
+                                    {
+                                        callback(null);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                callback(null);
+                            }
+                        }
+                    });        
                 }
             });
         }
@@ -277,9 +309,179 @@ function calculaTurnos(numJugadores)
                     
     }
 }
+function generarTurnos(numJugadores)
+{
+    console.log("turnos numero:"+numJugadores);
+    switch (numJugadores)
+    {
+        case "3":
+            return _.shuffle([1,2,3]);   
+            break;
+        case "4":
+            return _.shuffle([1,2,3,4]);
+            break;
+        case "5":
+            return _.shuffle([1,2,3,4,5]);
+            break;
+        case "6":
+            return _.shuffle([1,2,3,4,5,6]);
+            break;
+        case "7":
+            return _.shuffle([1,2,3,4,5,6,7]);
+            break;
+        default:
+            return null;
+                    
+    }
+}
+function generarTipos(numJugadores)
+{
+    console.log("tipos numero:"+numJugadores);
+    switch (numJugadores)
+    {
+        case "3":
+            return _.shuffle(["S","B","B"]);   
+            break;
+        case "4":
+            return _.shuffle(["S","B","B","B"]);   
+            break;
+        case "5":
+            return _.shuffle(["S","S","B","B","B"]);   
+            break;
+        case "6":
+            return _.shuffle(["S","S","B","B","B","B"]);   
+            break;
+        case "7":
+            return _.shuffle(["S","S","B","B","B","B","B"]);   
+            break;
+        default:
+            return null;
+                    
+    }
+}
 function calculaFecha()
 {
     var fecha= new Date();
     return fecha.getDay()+"/"+fecha.getMonth()+"/"+ fecha.getFullYear();
 }
-
+/*
+ * Generar un numero N de cartas aleatorias para la mano 
+    * 5 o 6 para el inicio de la partida(depende del numero de jugadores)
+    * 1 para el descarte del jugador
+ */
+function generarCartasAleatorias(numCartas)
+{
+    console.log("Num Cartas:"+cartas.piezasJuego[0].nombre);
+    return _.sample(cartasJuego,numCartas);
+}
+//Genera una posicion aleatoria para la pepita
+function generarPepitaOro()
+{
+    
+    var pepita=_.sample([0,1,2], 1);
+    console.log("Pepita: "+pepita);
+    var salida=[];
+    for(var i=0;i<3;i++)
+    {
+        if (i===pepita)
+            salida.push("Gold");
+        else
+          salida.push("NoGold");  
+    }
+    return salida;
+}
+//Generador De partidas
+function generarPartida(IDPartida,numJugadores,callback)
+{   
+    //introducir casillas
+    accBBDD.generarTablero(IDPartida,generarPepitaOro(),function(err)
+    {
+        console.log("paso 1");
+        if(err)
+        {
+            callback(err);
+        }
+        else
+        {
+            //generar lista de turnos
+            generarDatosJugador(IDPartida,numJugadores,function(err){
+                console.log("paso 2");
+                if(err)
+                {
+                    callback(err);
+                }
+                else
+                {
+                    //cambiar estado de la partida a 1
+                    accBBDD.cambiarEstadoPartida(IDPartida,1,function(err){
+                        console.log("paso 3");
+                        if(err)
+                        {
+                            callback(err);
+                        }
+                        else
+                        {
+                            callback(null);
+                        }    
+                    });
+                }
+            });           
+        }
+    });
+    
+}
+function generarDatosJugador(IDPartida,numJugadores,callback)
+{
+    var pos=0;
+    accBBDD.usuariosPartida(IDPartida,function(err,jugadores){
+        if(err)
+        {
+            callback(err,null);
+        }
+        else
+        {
+            console.log(jugadores);
+            jugadores.forEach(function(jugador){
+                var cartas=generarCartasAleatorias(numJugadores);
+                var turnos=generarTurnos(numJugadores);
+                var tipo=generarTipos(numJugadores);
+                console.log("cartas: "+cartas);
+                console.log("turnos: "+turnos);
+                console.log("tipos: "+tipo);
+                accBBDD.añadirVariablesJugador(IDPartida,jugador.ID_Usuario,tipo[pos],turnos[pos],cartas,function(err)
+                {
+                    if(err)
+                    {
+                        callback(err,null);
+                    }
+                });
+                pos++;
+            });
+        }
+    });
+}
+function partidasDisponibles(IDUsuario,callback)
+{
+    accBBDD.partidasUsuarioIguales(IDUsuario,function(err,iguales){
+        if(err)
+        {
+            callback(err,null);
+        }
+        else
+        {
+            accBBDD.partidasUsuarioNoIguales(IDUsuario,function(err,noIguales){
+                if(err)
+                {
+                    callback(err,null);
+                }
+                else
+                {
+                    /*console.log(noIguales);
+                     console.log("==============================");
+                      console.log(iguales);*/
+                    callback(null,_.difference(noIguales,iguales));
+                }
+            });
+        }
+    });
+}

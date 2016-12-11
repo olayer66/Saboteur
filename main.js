@@ -10,6 +10,7 @@ var expressValidator = require("express-validator");
 var session = require("express-session");
 var mysqlSession = require("express-mysql-session");
 //Craga de modulos personalizados
+var config= require("./config");
 var accBBDD =require("./accesoBBDD");
 var controlPartidas=require("./controlPartidas");
 //Variables
@@ -17,13 +18,7 @@ var facMulter= multer({ storage: multer.memoryStorage() });
 var recEstaticos= path.join(__dirname, "static");
 var servidor= express();
 var MySQLStore = mysqlSession(session);
-var sessionStore = new MySQLStore({
-    port:"3306",
-    host:  "localhost",
-    user:  "root",
-    password: "root",
-    database: "saboteur"
-});
+var sessionStore = new MySQLStore(config.conexionBBDD);
 var middlewareSession = session({
     saveUninitialized: false,
     secret: "foobar34",
@@ -111,7 +106,7 @@ servidor.get("/desconectar",function(req,res)
 {
     res.status(200);
     req.session.destroy();
-    res.render("inicio",{IDUsuario:null});
+    res.render("inicio",{IDUsuario:undefined});
 });
 
 //Metodos GET para botones de ver partidas
@@ -138,6 +133,7 @@ servidor.get("/unirsepartida/:id", function(req, res)
 {
    res.status(200);
    console.log("req de params: "+ req.params.id);
+   console.log("paso por aqui");
    controlPartidas.asignarUsuarioPartida(req.params.id,req.session.IDUsuario,function(err){
        if(err)
        {
@@ -160,15 +156,14 @@ servidor.get("/verpartida/:id", function(req, res)
    controlPartidas.borrarPartida(req.params.id,function(err){
        if(err)
        {
-           res.render("error",{cabecera:"400-Error al borrar la partida",
+           res.render("error",{cabecera:"400-La partida no esta disponible",
                                mensaje: err.message,
                                pila: err.stack,
                                pagina:"volverpartida"});
        }
        else
        {
-           res.status(200);
-           res.redirect("/verpartidas");
+          
        }
    }); 
 });
@@ -176,10 +171,10 @@ servidor.get("/entrarpartida/:id", function(req, res)
 {
    res.status(200);
    console.log("req de params: "+ req.params.id);
-   controlPartidas.borrarPartida(req.params.id,function(err){
+   controlPartidas.generarPartida(req.params.id,function(err){
        if(err)
        {
-           res.render("error",{cabecera:"400-Error al borrar la partida",
+           res.render("error",{cabecera:"400-La partida no esta en juego",
                                mensaje: err.message,
                                pila: err.stack,
                                pagina:"volverpartida"});
@@ -373,10 +368,10 @@ servidor.post("/volvernuevo", function(req, res)
 });
 /*======================================INICIO DEL SERVIDOR==============================================*/
 //Abrimos el servidor a la escucha por el puerto 3000
-servidor.listen(3000, function(err) {
+servidor.listen(config.puerto, function(err) {
     if (err) {
-        console.log("Error al abrir el puerto 3000: " + err);
+        console.log("Error al abrir el puerto "+config.puerto+": " + err);
     } else {
-        console.log("Servidor escuchando en el puerto 3000.");
+        console.log("Servidor escuchando en el puerto"+config.puerto+".");
     }
 });

@@ -24,9 +24,11 @@ module.exports={
     devolverEstadoPartida:devolverEstadoPartida,
     sumarTurnoPartida:sumarTurnoPartida,
     devolverTurnosPartida:devolverTurnosPartida,
+    devolverJugadoresPartida:devolverJugadoresPartida,
     //Asignacion de partidas
     asignarUsuarioPartida:asignarUsuarioPartida,
-    partidasUsuarioDisponibles:partidasUsuarioDisponibles,
+    partidasUsuarioNoIguales:partidasUsuarioNoIguales,
+    partidasUsuarioIguales:partidasUsuarioIguales,
     partidasUsuarioTerminadas:partidasUsuarioTerminadas,
     partidasUsuarioEnJuego:partidasUsuarioEnJuego,
     partidasUsuarioEnEspera:partidasUsuarioEnEspera,
@@ -34,14 +36,15 @@ module.exports={
     usuariosPartida:usuariosPartida,
     borrarAsignacionPartidas:borrarAsignacionPartidas,
     borrarUsuarioDePartida:borrarUsuarioDePartida,
-    añadirNuevaMano:añadirNuevaMano,
+    añadirVariablesJugador:añadirVariablesJugador,
     añadirCartaMano:añadirCartaMano,
     //tableros
     crearTablero:crearTablero,
     borrarTablero:borrarTablero,
     sacarTablero:sacarTablero,
     añadirCartaTablero:añadirCartaTablero,
-    devolverCartaTablero:devolverCartaTablero
+    devolverCartaTablero:devolverCartaTablero,
+    generarTablero:generarTablero
 };
 //Funciones para el control de usuarios
 function crearUsuario(valores,callback)
@@ -465,6 +468,44 @@ function devolverTurnosPartida(ID,callback)
         callback(new Error("El ID de partida no es valido"),null);
     }
 }
+function devolverJugadoresPartida(ID,callback)
+{
+    var conexion = mysql.createConnection(config.conexionBBDD);
+    if(ID!==null)
+    {
+        query="SELECT Num_Jugadores,Num_Max_Jugadores FROM Partidas WHERE ID_partida= ?";
+        valoresEntrada=[ID];
+        //Conectamos con la consulta requerida
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
+            {
+                if (err) 
+                {
+                    console.error(err);
+                    callback(err,null);
+                } 
+                else 
+                {
+                    callback(null,rows);
+                }
+            });
+        }
+        conexion.end();
+    });
+    }
+    else
+    {
+        callback(new Error("El ID de partida no es valido"),null);
+    }
+}
 function devolverEstadoPartida(ID,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
@@ -566,13 +607,53 @@ function asignarUsuarioPartida(IDPartida,IDUsuario,Roll,callback)
         callback(new Error("Valores de entrada no validos"),null);
     }
 }
-function partidasUsuarioDisponibles(ID,callback)
+function partidasUsuarioIguales(ID,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario= ? OR B.Creador<>? AND A.ID_Partida<>B.ID_Partida AND B.Estado_Partida=0";
-        valoresEntrada=[ID,ID];
+        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario= ? AND A.ID_Partida=B.ID_Partida";
+        valoresEntrada=[ID];
+        
+        //Conectamos con la consulta requerida
+        handleDisconnect(conexion);
+        conexion.connect(function(err)
+        {
+            if (err) 
+            {
+                console.error(err);
+                callback(err,null);
+            } 
+            else 
+            {
+                conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
+                {
+                    if (err) 
+                    {
+                        console.error(err);
+                        callback(err,null);
+                    } 
+                    else 
+                    {
+                        callback(null,rows);
+                        conexion.end();
+                    }
+                });
+            }      
+        }); 
+    }
+    else
+    {
+        callback(new Error("El ID de usuario no es valido"),null);
+    }
+}
+function partidasUsuarioNoIguales(ID,callback)
+{
+    var conexion = mysql.createConnection(config.conexionBBDD);
+    if(ID!==null)
+    {
+        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> ? AND A.ID_Partida=B.ID_Partida";
+        valoresEntrada=[ID];
         
         //Conectamos con la consulta requerida
         handleDisconnect(conexion);
@@ -771,7 +852,7 @@ function usuariosPartida(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT ID_Partida,Tipo_Jugador FROM Asignacion_Partidas WHERE ID_Partida= ?";
+        query="SELECT ID_Usuario FROM Asignacion_Partidas WHERE ID_Partida= ?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
@@ -802,6 +883,47 @@ function usuariosPartida(ID,callback)
     else
     {
         callback(new Error("El ID de partida no es valido"),null);
+    }
+}
+function añadirVariablesJugador(IDPartida,IDUsuario,Tipo,Posicion,cartas,callback)
+{
+     var conexion = mysql.createConnection(config.conexionBBDD);
+    if(IDPartida!==null)
+    {
+        if(IDUsuario!==null)
+        {
+            if(cartas!==null)
+            {
+                query="UPDATE asginacion_partidas SET Tipo_Jugador=? Pos_Turno= ?  mano1=? mano2=? mano3=? mano4=? mano5=? mano6=? WHERE ID_Partida=? AND ID_Usuario=?";
+                valoresEntrada=[Tipo,Posicion,cartas[0].nombre,cartas[1].nombre,cartas[2].nombre,cartas[3].nombre,cartas[4].nombre,cartas[5].nombre,IDPartida,IDUsuario];
+                //Conectamos con la consulta requerida
+                conexion.query(mysql.format(query,valoresEntrada),function(err) 
+                {
+                    if (err) 
+                    {
+                        console.error(err);
+                        callback(err);
+                    } 
+                    else 
+                    {
+                        callback(null);
+                        conexion.end();
+                    }
+                });
+            }
+            else
+            {
+                callback(new Error("La carta no es valida"));
+            }
+        }
+        else
+        {
+            callback(new Error("La ID de usuario no es valido"));
+        }
+    }
+    else
+    {
+        callback(new Error("La ID de partida no es valido"));
     }
 }
 function borrarAsignacionPartidas(ID,callback)
@@ -887,47 +1009,6 @@ function borrarUsuarioDePartida(IDPartida,IDUsuario,callback)
     else
     {
         callback(new Error("El ID de partida no es valido"));
-    }
-}
-function añadirNuevaMano(IDPartida,IDUsuario,cartas,callback)
-{
-    var conexion = mysql.createConnection(config.conexionBBDD);
-    if(IDPartida!==null)
-    {
-        if(IDUsuario!==null)
-        {
-            if(cartas!==null)
-            {
-                query="UPDATE asginacion_partidas SET  mano1=? mano2=? mano3=? mano4=? mano5=? mano6=? WHERE ID_Partida=? AND ID_Usuario=?";
-                valoresEntrada=[cartas.mano1,cartas.mano2,cartas.mano3,cartas.mano4,cartas.mano5,cartas.mano6,IDPartida,IDUsuario];
-                //Conectamos con la consulta requerida
-                conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
-                {
-                    if (err) 
-                    {
-                        console.error(err);
-                        callback(err);
-                    } 
-                    else 
-                    {
-                        callback(null);
-                        conexion.end();
-                    }
-                });
-            }
-            else
-            {
-                callback(new Error("La carta no es valida"));
-            }
-        }
-        else
-        {
-            callback(new Error("La ID de usuario no es valido"));
-        }
-    }
-    else
-    {
-        callback(new Error("La ID de partida no es valido"));
     }
 }
 function añadirCartaMano(IDPartida,IDUsuario,carta,callback)
@@ -1155,6 +1236,33 @@ function devolverCartaTablero(IDPartida,posicion,callback)
     else
     {
         callback(new Error("La ID de partida no es valido"));
+    }
+}
+function generarTablero(IDPartida,cartas,callback)
+{
+    var conexion = mysql.createConnection(config.conexionBBDD);
+    if(cartas!==null)
+    {
+        query="UPDATE tableros SET  A4=?, G2=?,G4=?,G6=? WHERE ID_Partida= ?";
+        valoresEntrada=["Start",cartas[0],cartas[1],cartas[2],IDPartida];
+        //Conectamos con la consulta requerida
+        conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
+        {
+            if (err) 
+            {
+                console.error(err);
+                callback(err);
+            } 
+            else 
+            {
+                callback(null);
+                conexion.end();
+            }
+        });
+    }
+    else
+    {
+        callback(new Error("Las cartas no son validas"));
     }
 }
 /*===========================CONTROL DE CONEXION==========================================================*/
