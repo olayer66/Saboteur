@@ -11,7 +11,7 @@
           <!--Cabecera-->
           <div class="cabecera">
                     <div id="logo"><img src="images/Logo.png" alt="logo"></div>
-                    <% if (IDUsuario !== null) { %>
+                    <% if (IDUsuario !== undefined) { %>
                         <div id="estado"><img src="images/estado.png" alt="Estado"></div>
                     <%}%>
           </div>
@@ -21,7 +21,7 @@
             <!--Menu-->
             <div class="menu">
     		<ul>
-                <% if (IDUsuario === null) { %> <!--datos == null -->
+                <% if (IDUsuario === undefined) { %> <!--datos == null -->
                     <li id="boton"><a href="login"><img id="imgBoton" src="images/piedra_login.png" alt="Iniciar sesion"></a></li>
                     <li id="boton"><a href="nuevousuario"><img id="imgBoton" src="images/piedra_nuevo_usuario.png" alt="Nuevo usuario"></a></li>
                 <% } else { %>

@@ -19,7 +19,8 @@ var vista={
     parEnJuego:null,
     parDisponibles:null,
     parPropias:null,
-    parTerminadas:null
+    parTerminadas:null,
+    parEspera:null
 };
 module.exports={
     crearPartida:crearPartida,
@@ -49,16 +50,13 @@ function crearPartida(IDUsuario,entrada,callback)
             //Extraemos el ID de la partida creada
             partida.IDPartida=salida.insertId;
             //Asignamos al creador como primer jugador de la partida
-            console.log("ID ");
             asignarUsuarioPartida(partida.IDPartida,partida.creador,function (err)
             {
-                console.log("asignar");
                 if(err)
                 {
                     //En caso de fallo hacemos RollBack
                     borrarPartida(partida.IDPartida,function(err2)
                     {
-                        console.log("error 1");
                         if(err2)
                           callback(err2);
                         else
@@ -70,13 +68,11 @@ function crearPartida(IDUsuario,entrada,callback)
                     //Creamos el tablero y lo asignamos
                     accBBDD.crearTablero(partida.IDPartida,function (err)
                     {
-                        console.log("tablero");
                         if(err)
                         {
                             //En caso de fallo hacemos RollBack
                             borrarPartida(partida.IDPartida,function(err2)
                             {
-                                console.log("error 2");
                                 if(err2)
                                   callback(err2);
                                 else
@@ -85,7 +81,6 @@ function crearPartida(IDUsuario,entrada,callback)
                         }
                         else
                         {
-                            console.log("fin creacion");
                             callback(null);
                         }
                     });
@@ -122,7 +117,8 @@ function verPartidasUsuario(IDUsuario,callback)
                         else
                         {
                             vista.parTerminadas=terminadas;
-                            accBBDD.partidasUsuarioEnJuego(IDUsuario,function(err,enJuego){
+                            accBBDD.partidasUsuarioEnJuego(IDUsuario,function(err,enJuego)
+                            {
                                 if(err)
                                 {
                                      callback(err,null);
@@ -130,7 +126,17 @@ function verPartidasUsuario(IDUsuario,callback)
                                 else
                                 {
                                     vista.parEnJuego=enJuego;
-                                    callback(null,vista);
+                                    accBBDD.partidasUsuarioEnEspera(IDUsuario,function(err,enEspera){
+                                        if(err)
+                                        {
+                                             callback(err,null);
+                                        }
+                                        else
+                                        {
+                                            vista.parEspera=enEspera;
+                                            callback(null,vista);
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -143,10 +149,13 @@ function verPartidasUsuario(IDUsuario,callback)
 function borrarPartida(IDPartida,callback)
 {
     //eliminamos las asignaciones de jugadores a la partida
-    accBBDD.borrarAsignacionPartidas(IDPartida,function()
+    console.log("ID partida: " + IDPartida);
+    accBBDD.borrarAsignacionPartidas(IDPartida,function(err)
     {
+        console.log("ID partida 1");
         if(err)
         {
+            console.log("error 1");
             callback(err);
         }
         else
@@ -154,8 +163,10 @@ function borrarPartida(IDPartida,callback)
             //borramos el tablero asociado a la partida
             accBBDD.borrarTablero(IDPartida,function(err)
             {
+                console.log("ID partida 2");
                 if(err)
                 {
+                    console.log("error 2");
                     callback(err);
                 }
                 else
@@ -163,8 +174,10 @@ function borrarPartida(IDPartida,callback)
                     //borramos la partida
                     accBBDD.borrarPartida(IDPartida,function(err)
                     {
+                        console.log("ID partida 3");
                         if(err)
                         {
+                            console.log("error 4");
                             callback(err);
                         }
                         else
@@ -222,6 +235,20 @@ function quitarUsuarioPartida(IDPartida,IDUsuario,callback)
                     callback(null);
                 }
             });
+        }
+    });
+}
+function comprobarEstadoPartida(IDPartida,callback)
+{
+    accBBDD.devolverEstadoPartida()(IDPartida,function(err,estado){
+        if(err)
+        {
+            callback(err,null);
+        }
+        else
+        {
+           
+            callback(null,estado);
         }
     });
 }

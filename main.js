@@ -79,7 +79,6 @@ servidor.get("/verpartidas",function(req,res)
             }
             else
             {
-                
                 //Cargamos la vista de partidas
                 res.status(200);
                 res.render("verpartidas",{partidas:vista});
@@ -113,6 +112,84 @@ servidor.get("/desconectar",function(req,res)
     res.status(200);
     req.session.destroy();
     res.render("inicio",{IDUsuario:null});
+});
+
+//Metodos GET para botones de ver partidas
+servidor.get("/borrarpartida/:id", function(req, res) 
+{
+   res.status(200);
+   console.log("req de params: "+ req.params.id);
+   controlPartidas.borrarPartida(req.params.id,function(err){
+       if(err)
+       {
+           res.render("error",{cabecera:"400-Error al borrar la partida",
+                               mensaje: err.message,
+                               pila: err.stack,
+                               pagina:"volverpartida"});
+       }
+       else
+       {
+           res.status(200);
+           res.redirect("/verpartidas");
+       }
+   }); 
+});
+servidor.get("/unirsepartida/:id", function(req, res) 
+{
+   res.status(200);
+   console.log("req de params: "+ req.params.id);
+   controlPartidas.asignarUsuarioPartida(req.params.id,req.session.IDUsuario,function(err){
+       if(err)
+       {
+           res.render("error",{cabecera:"400-Error al asginar a la partida",
+                               mensaje: err.message,
+                               pila: err.stack,
+                               pagina:"volverpartida"});
+       }
+       else
+       {
+           res.status(200);
+           res.redirect("/verpartidas");
+       }
+   }); 
+});
+servidor.get("/verpartida/:id", function(req, res) 
+{
+   res.status(200);
+   console.log("req de params: "+ req.params.id);
+   controlPartidas.borrarPartida(req.params.id,function(err){
+       if(err)
+       {
+           res.render("error",{cabecera:"400-Error al borrar la partida",
+                               mensaje: err.message,
+                               pila: err.stack,
+                               pagina:"volverpartida"});
+       }
+       else
+       {
+           res.status(200);
+           res.redirect("/verpartidas");
+       }
+   }); 
+});
+servidor.get("/entrarpartida/:id", function(req, res) 
+{
+   res.status(200);
+   console.log("req de params: "+ req.params.id);
+   controlPartidas.borrarPartida(req.params.id,function(err){
+       if(err)
+       {
+           res.render("error",{cabecera:"400-Error al borrar la partida",
+                               mensaje: err.message,
+                               pila: err.stack,
+                               pagina:"volverpartida"});
+       }
+       else
+       {
+           res.status(200);
+           res.redirect("/verpartidas");
+       }
+   }); 
 });
 //Metodos POST
 servidor.post("/nuevousuario",facMulter.single("imgPerfil"), function(req, res) 
@@ -272,6 +349,7 @@ servidor.post("/nuevapartida",facMulter.none(), function(req, res)
         }
     });
 });
+
 //metodos POST para los botones del ejs de error
 servidor.post("/volverusuario", function(req, res) 
 {
