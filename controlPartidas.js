@@ -30,7 +30,8 @@ module.exports={
     borrarPartida:borrarPartida,
     verPartidasUsuario:verPartidasUsuario,
     quitarUsuarioPartida:quitarUsuarioPartida,
-    asignarUsuarioPartida:asignarUsuarioPartida
+    asignarUsuarioPartida:asignarUsuarioPartida,
+    pasarTurno:pasarTurno
 };
 function crearPartida(IDUsuario,entrada,callback)
 {     
@@ -113,7 +114,7 @@ function verPartidasUsuario(IDUsuario,callback)
                 else
                 {
                     vista.parTerminadas=terminadas;
-                    accBBDD.partidasUsuarioEnJuego(IDUsuario,function(err,enJuego)
+                    partidasEnJuego(IDUsuario,function(err,enJuego)
                     {
                         if(err)
                         {
@@ -194,7 +195,6 @@ function borrarPartida(IDPartida,callback)
         }
     });
 }
-
 //Asignacion de partidas
 function asignarUsuarioPartida(IDPartida,IDUsuario,callback)
 {
@@ -268,19 +268,56 @@ function quitarUsuarioPartida(IDPartida,IDUsuario,callback)
         }
     });
 }
-function comprobarEstadoPartida(IDPartida,callback)
+//Funciones de Juego
+function pasarTurno(IDPartida,IDUsuario,callback)
 {
-    accBBDD.devolverEstadoPartida()(IDPartida,function(err,estado){
+    var turno;
+    //Sumar turno y pasar turno al siguiente
+    accBBDD.devolverTurnosPartida(IDPartida,function(err,salida){
         if(err)
         {
-            callback(err,null);
+            callback(err);
         }
         else
         {
-           
-            callback(null,estado);
+            //Comprobar si no quedan turnos
+            if((salida[0].Turno +1)>salida[0].Num_turnos)
+            {
+
+                //Llamamos a finalizar partida
+                finalizarPartida(true,"S",function(err){
+                    if(err)
+                    {
+                        callback(err);
+                    }
+                    else
+                    {
+                        callback(null);
+                    }
+                });
+            }
+            else
+            {
+                if((salida[0].Turno_juego+1)>salida[0].Num_Max_Jugadores)
+                turno=1;
+                else
+                    turno=salida[0].Turno_juego+1;
+                //Sumanos turno y cambiamos el turno al siguiente jugador
+                accBBDD.sumarTurnoPartida(IDPartida,turno,function(err){
+                    if(err)
+                    {
+                        callback(err);
+                    }
+                    else
+                    {
+                        //Eliminar carta usada y sustituir por otra
+                        
+                    }
+                });
+            } 
         }
     });
+    
 }
 /*===================================================FUNCIONES AUXILIARES==================================================*/
 function calculaTurnos(numJugadores)
@@ -363,7 +400,7 @@ function calculaFecha()
 /*
  * Generar un numero N de cartas aleatorias para la mano 
     * 5 o 6 para el inicio de la partida(depende del numero de jugadores)
-    * 1 para el descarte del jugador
+    * 1 para el descarte del jugador y al añadirla al tablero
  */
 function generarCartasAleatorias(numCartas)
 {
@@ -457,9 +494,47 @@ function generarDatosJugador(IDPartida,numJugadores,callback)
         }
     });
 }
+/*
+ * Metodo para la finalizacion de una partida
+ * Tipo final es TRUE si ganan los saboteradores y FALSE si ganan los mineros
+*/
+function finalizarPartida(TipoFinal,ganador,callback){
+    
+}
+//Extrae las partidas que estan disponibles para el usuario
 function partidasDisponibles(IDUsuario,callback)
 {
-    var existe=false;
+    accBBDD.partidasUsuarioIguales(IDUsuario,function(err,asignadas){
+        if(err)
+        {
+            callback(err,null);
+        }
+        else
+        {
+            accBBDD.partidasUsuarioNoIguales(IDUsuario,function(err,partidas){
+                if(err)
+                {
+                    callback(err,null);
+                }
+                else
+                {
+                    for (var i=0;i<partidas.length;i++)
+                    {
+                        for (var x=0;x<asignadas.length;x++)
+                        {
+                            if(asignadas[x].ID_Partida== partidas[i].ID_Partida)
+                                partidas.splice(i,1);
+                        }
+                    }
+                    callback(null,partidas);                  
+                }
+            });     
+        }
+    });
+}
+//Extrae las partidas en juego del usuario
+function partidasEnJuego(IDUsuario,callback)
+{
     var salida=[];
     console.log("paso 1");
     accBBDD.partidasUsuarioIguales(IDUsuario,function(err,asignadas){
@@ -470,7 +545,7 @@ function partidasDisponibles(IDUsuario,callback)
         }
         else
         {
-            accBBDD.partidasUsuarioNoIguales(IDUsuario,function(err,partidas){
+            accBBDD.partidasUsuarioEnJuego(IDUsuario,function(err,partidas){
                 if(err)
                 {
                     console.log("paso 3");
@@ -479,19 +554,21 @@ function partidasDisponibles(IDUsuario,callback)
                 else
                 {
                     console.log("paso 4");
+                    console.log(partidas);
                     for (var i=0;i<partidas.length;i++)
                     {
                         for (var x=0;x<asignadas.length;x++)
                         {
                             console.log("Partida: "+asignadas[x].ID_Partida+" es giual a "+partidas[i].ID_Partida);
                             if(asignadas[x].ID_Partida== partidas[i].ID_Partida)
-                                partidas.splice(i,1);
+                                salida.push(partidas[i]);
                         }
                     }
-                    console.log(partidas);
-                    callback(null,partidas);                  
+                    console.log(salida);
+                    callback(null,salida);                  
                 }
             });     
         }
     });
 }
+

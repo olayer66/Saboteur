@@ -435,7 +435,7 @@ function devolverTurnosPartida(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT Turnos,num_Turnos FROM Partidas WHERE ID_partida= ?";
+        query="SELECT Turnos,num_Turnos,Turno_juego,Num_Max_Jugadores FROM Partidas WHERE ID_partida= ?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
@@ -544,13 +544,13 @@ function devolverEstadoPartida(ID,callback)
         callback(new Error("El ID de partida no es valido"),null);
     }
 }
-function sumarTurnoPartida(ID,callback)
+function sumarTurnoPartida(ID,turno,callback)
 {
      var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="UPDATE partidas SET Turnos=Turnos+1 WHERE ID_partida= ?";
-        valoresEntrada=[ID];
+        query="UPDATE partidas SET Turnos=Turnos+1,Turno_juego=? WHERE ID_partida= ?";
+        valoresEntrada=[turno,ID];
         //Conectamos con la consulta requerida
         conexion.query(mysql.format(query,valoresEntrada),function(err) 
         {
@@ -652,7 +652,7 @@ function partidasUsuarioNoIguales(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT * FROM Partidas  WHERE Creador<> ?";
+        query="SELECT * FROM Partidas  WHERE Creador<> ? AND Estado_Partida=0";
         valoresEntrada=[ID];
         
         //Conectamos con la consulta requerida
@@ -772,7 +772,7 @@ function partidasUsuarioEnJuego(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> ? AND A.ID_Partida=B.ID_Partida AND B.Estado_Partida=1";
+        query="SELECT * FROM Partidas  WHERE Creador<> ? AND Estado_Partida=1";
         valoresEntrada=[ID];
         
         //Conectamos con la consulta requerida
