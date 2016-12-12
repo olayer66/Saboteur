@@ -4,47 +4,7 @@
     * imagen: figura asociada
     * up,down,left,rigth : indican mediante true o false si son accesibles por ese borde
  */
-module.exports={
-    piezasBase:piezasBase,
-    piezasJuego:piezasJuego
-};
-//Piezas de tablero(inicio,oro,etc)
-var piezasBase=[
-    {
-       nombre:"DNK",
-       imagen:"DNK.png",
-       up:true,
-       down:true,
-       left:true,
-       rigth:true
-    },
-    {
-       nombre:"Gold",
-       imagen:"Gold.png",
-       up:true,
-       down:true,
-       left:true,
-       rigth:true
-    },
-    {
-       nombre:"NoGold",
-       imagen:"NoGold.png",
-       up:true,
-       down:true,
-       left:true,
-       rigth:true
-    },
-    {
-       nombre:"Start",
-       imagen:"T15.png",
-       up:true,
-       down:true,
-       left:true,
-       rigth:true
-    }
-];
-//Piezas de juego
-var piezasJuego=[
+module.exports=[
     {
        nombre:"blockSup",
        imagen:"T1.png",

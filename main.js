@@ -132,8 +132,6 @@ servidor.get("/borrarpartida/:id", function(req, res)
 servidor.get("/unirsepartida/:id", function(req, res) 
 {
    res.status(200);
-   console.log("req de params: "+ req.params.id);
-   console.log("paso por aqui");
    controlPartidas.asignarUsuarioPartida(req.params.id,req.session.IDUsuario,function(err){
        if(err)
        {

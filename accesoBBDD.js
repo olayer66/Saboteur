@@ -612,7 +612,7 @@ function partidasUsuarioIguales(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario= ? AND A.ID_Partida=B.ID_Partida";
+        query="SELECT ID_Partida FROM asignacion_partidas WHERE ID_Usuario= ?";
         valoresEntrada=[ID];
         
         //Conectamos con la consulta requerida
@@ -652,7 +652,7 @@ function partidasUsuarioNoIguales(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> ? AND A.ID_Partida=B.ID_Partida";
+        query="SELECT * FROM Partidas  WHERE Creador<> ?";
         valoresEntrada=[ID];
         
         //Conectamos con la consulta requerida
@@ -885,7 +885,7 @@ function usuariosPartida(ID,callback)
         callback(new Error("El ID de partida no es valido"),null);
     }
 }
-function añadirVariablesJugador(IDPartida,IDUsuario,Tipo,Posicion,cartas,callback)
+function añadirVariablesJugador(IDPartida,IDUsuario,numJugadores,Tipo,Posicion,cartas,callback)
 {
      var conexion = mysql.createConnection(config.conexionBBDD);
     if(IDPartida!==null)
@@ -894,8 +894,16 @@ function añadirVariablesJugador(IDPartida,IDUsuario,Tipo,Posicion,cartas,callba
         {
             if(cartas!==null)
             {
-                query="UPDATE asginacion_partidas SET Tipo_Jugador=? Pos_Turno= ?  mano1=? mano2=? mano3=? mano4=? mano5=? mano6=? WHERE ID_Partida=? AND ID_Usuario=?";
-                valoresEntrada=[Tipo,Posicion,cartas[0].nombre,cartas[1].nombre,cartas[2].nombre,cartas[3].nombre,cartas[4].nombre,cartas[5].nombre,IDPartida,IDUsuario];
+                if (numJugadores>5)
+                {
+                    query="UPDATE asignacion_partidas SET Tipo_Jugador=?, Pos_Turno=?, mano1=?, mano2=?, mano3=?, mano4=?, mano5=? WHERE ID_Partida=? AND ID_Usuario=?";
+                    valoresEntrada=[Tipo,Posicion,cartas[0].nombre,cartas[1].nombre,cartas[2].nombre,cartas[3].nombre,cartas[4].nombre,IDPartida,IDUsuario];
+                }
+                else
+                {
+                    query="UPDATE asignacion_partidas SET Tipo_Jugador=?, Pos_Turno=?, mano1=?, mano2=?, mano3=?, mano4=?, mano5=?, mano6=? WHERE ID_Partida=? AND ID_Usuario=?";
+                    valoresEntrada=[Tipo,Posicion,cartas[0].nombre,cartas[1].nombre,cartas[2].nombre,cartas[3].nombre,cartas[4].nombre,cartas[5].nombre,IDPartida,IDUsuario];
+                }
                 //Conectamos con la consulta requerida
                 conexion.query(mysql.format(query,valoresEntrada),function(err) 
                 {

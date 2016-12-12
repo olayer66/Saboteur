@@ -4,7 +4,8 @@ Creacion, modficacion y eliminacion de partidas.
 "use strict";
 var _ = require("underscore");
 var accBBDD =require("./accesoBBDD");
-var cartas= require("./cartas");
+var cartasJuego= require("./cartasjuego");
+var cartasBasicas= require("./cartasbasicas");
 var partida= {
     IDPartida:null,
     nombre:null,
@@ -220,11 +221,8 @@ function asignarUsuarioPartida(IDPartida,IDUsuario,callback)
                         }
                         else
                         {
-                            console.log("llego aqui:"+IDPartida);
-                            console.log("llego aqui 2:"+salida[0].Num_Jugadores+"   "+salida[0].Num_Max_Jugadores);
                             if(salida[0].Num_Jugadores===salida[0].Num_Max_Jugadores)
                             {
-                                console.log("llego aqui 3");
                                 generarPartida(IDPartida,salida[0].Num_Max_Jugadores,function (err){
                                     if(err)
                                     {
@@ -311,22 +309,21 @@ function calculaTurnos(numJugadores)
 }
 function generarTurnos(numJugadores)
 {
-    console.log("turnos numero:"+numJugadores);
     switch (numJugadores)
     {
-        case "3":
+        case 3:
             return _.shuffle([1,2,3]);   
             break;
-        case "4":
+        case 4:
             return _.shuffle([1,2,3,4]);
             break;
-        case "5":
+        case 5:
             return _.shuffle([1,2,3,4,5]);
             break;
-        case "6":
+        case 6:
             return _.shuffle([1,2,3,4,5,6]);
             break;
-        case "7":
+        case 7:
             return _.shuffle([1,2,3,4,5,6,7]);
             break;
         default:
@@ -336,22 +333,21 @@ function generarTurnos(numJugadores)
 }
 function generarTipos(numJugadores)
 {
-    console.log("tipos numero:"+numJugadores);
     switch (numJugadores)
     {
-        case "3":
+        case 3:
             return _.shuffle(["S","B","B"]);   
             break;
-        case "4":
+        case 4:
             return _.shuffle(["S","B","B","B"]);   
             break;
-        case "5":
+        case 5:
             return _.shuffle(["S","S","B","B","B"]);   
             break;
-        case "6":
+        case 6:
             return _.shuffle(["S","S","B","B","B","B"]);   
             break;
-        case "7":
+        case 7:
             return _.shuffle(["S","S","B","B","B","B","B"]);   
             break;
         default:
@@ -371,7 +367,6 @@ function calculaFecha()
  */
 function generarCartasAleatorias(numCartas)
 {
-    console.log("Num Cartas:"+cartas.piezasJuego[0].nombre);
     return _.sample(cartasJuego,numCartas);
 }
 //Genera una posicion aleatoria para la pepita
@@ -379,11 +374,11 @@ function generarPepitaOro()
 {
     
     var pepita=_.sample([0,1,2], 1);
-    console.log("Pepita: "+pepita);
     var salida=[];
     for(var i=0;i<3;i++)
     {
-        if (i===pepita)
+        //NO TOCAR EL == (Si pones === falla)
+        if (i==pepita)
             salida.push("Gold");
         else
           salida.push("NoGold");  
@@ -396,7 +391,7 @@ function generarPartida(IDPartida,numJugadores,callback)
     //introducir casillas
     accBBDD.generarTablero(IDPartida,generarPepitaOro(),function(err)
     {
-        console.log("paso 1");
+        
         if(err)
         {
             callback(err);
@@ -404,10 +399,11 @@ function generarPartida(IDPartida,numJugadores,callback)
         else
         {
             //generar lista de turnos
-            generarDatosJugador(IDPartida,numJugadores,function(err){
-                console.log("paso 2");
+            console.log("paso 1");
+            generarDatosJugador(IDPartida,numJugadores,function(err){          
                 if(err)
-                {
+                {   
+                    console.log("paso 2");
                     callback(err);
                 }
                 else
@@ -433,55 +429,69 @@ function generarPartida(IDPartida,numJugadores,callback)
 function generarDatosJugador(IDPartida,numJugadores,callback)
 {
     var pos=0;
+    var cartas;
     accBBDD.usuariosPartida(IDPartida,function(err,jugadores){
         if(err)
         {
-            callback(err,null);
+            callback(err);
         }
         else
-        {
-            console.log(jugadores);
+        {                
+            var turnos=generarTurnos(numJugadores);
+            var tipo=generarTipos(numJugadores);
             jugadores.forEach(function(jugador){
-                var cartas=generarCartasAleatorias(numJugadores);
-                var turnos=generarTurnos(numJugadores);
-                var tipo=generarTipos(numJugadores);
-                console.log("cartas: "+cartas);
-                console.log("turnos: "+turnos);
-                console.log("tipos: "+tipo);
-                accBBDD.añadirVariablesJugador(IDPartida,jugador.ID_Usuario,tipo[pos],turnos[pos],cartas,function(err)
+                if(numJugadores>5)
+                    cartas=generarCartasAleatorias(5);
+                else
+                    cartas=generarCartasAleatorias(6);
+                accBBDD.añadirVariablesJugador(IDPartida,jugador.ID_Usuario,numJugadores,tipo[pos],turnos[pos],cartas,function(err)
                 {
                     if(err)
                     {
-                        callback(err,null);
+                        callback(err);
                     }
                 });
                 pos++;
             });
+            callback(null);
         }
     });
 }
 function partidasDisponibles(IDUsuario,callback)
 {
-    accBBDD.partidasUsuarioIguales(IDUsuario,function(err,iguales){
+    var existe=false;
+    var salida=[];
+    console.log("paso 1");
+    accBBDD.partidasUsuarioIguales(IDUsuario,function(err,asignadas){
         if(err)
         {
+            console.log("paso 2");
             callback(err,null);
         }
         else
         {
-            accBBDD.partidasUsuarioNoIguales(IDUsuario,function(err,noIguales){
+            accBBDD.partidasUsuarioNoIguales(IDUsuario,function(err,partidas){
                 if(err)
                 {
+                    console.log("paso 3");
                     callback(err,null);
                 }
                 else
                 {
-                    /*console.log(noIguales);
-                     console.log("==============================");
-                      console.log(iguales);*/
-                    callback(null,_.difference(noIguales,iguales));
+                    console.log("paso 4");
+                    for (var i=0;i<partidas.length;i++)
+                    {
+                        for (var x=0;x<asignadas.length;x++)
+                        {
+                            console.log("Partida: "+asignadas[x].ID_Partida+" es giual a "+partidas[i].ID_Partida);
+                            if(asignadas[x].ID_Partida== partidas[i].ID_Partida)
+                                partidas.splice(i,1);
+                        }
+                    }
+                    console.log(partidas);
+                    callback(null,partidas);                  
                 }
-            });
+            });     
         }
     });
 }
