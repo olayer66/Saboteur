@@ -5,7 +5,6 @@ Creacion, modficacion y eliminacion de partidas.
 var _ = require("underscore");
 var accBBDD =require("./accesoBBDD");
 var cartasJuego= require("./cartasjuego");
-var cartasBasicas= require("./cartasbasicas");
 var partida= {
     IDPartida:null,
     nombre:null,
@@ -69,27 +68,10 @@ function crearPartida(IDUsuario,entrada,callback)
                 }
                 else
                 {
-                    //Creamos el tablero y lo asignamos
-                    accBBDD.crearTablero(partida.IDPartida,function (err)
-                    {
-                        if(err)
-                        {
-                            //En caso de fallo hacemos RollBack
-                            borrarPartida(partida.IDPartida,function(err2)
-                            {
-                                if(err2)
-                                  callback(err2);
-                                else
-                                  callback(err);
-                            });
-                        }
-                        else
-                        {
-                            callback(null);
-                        }
-                    });
-              }
-          });
+                   
+                     callback(null);
+                }
+            });
         }
     });
 }
@@ -154,42 +136,24 @@ function verPartidasUsuario(IDUsuario,callback)
 function borrarPartida(IDPartida,callback)
 {
     //eliminamos las asignaciones de jugadores a la partida
-    console.log("ID partida: " + IDPartida);
     accBBDD.borrarAsignacionPartidas(IDPartida,function(err)
     {
-        console.log("ID partida 1");
         if(err)
         {
-            console.log("error 1");
             callback(err);
         }
         else
-        {
-            //borramos el tablero asociado a la partida
-            accBBDD.borrarTablero(IDPartida,function(err)
+        {         
+            //borramos la partida
+            accBBDD.borrarPartida(IDPartida,function(err)
             {
-                console.log("ID partida 2");
                 if(err)
                 {
-                    console.log("error 2");
                     callback(err);
                 }
                 else
                 {
-                    //borramos la partida
-                    accBBDD.borrarPartida(IDPartida,function(err)
-                    {
-                        console.log("ID partida 3");
-                        if(err)
-                        {
-                            console.log("error 4");
-                            callback(err);
-                        }
-                        else
-                        {
-                            callback(null);
-                        }
-                    }); 
+                    callback(null);
                 }
             }); 
         }
@@ -392,6 +356,7 @@ function generarTipos(numJugadores)
                     
     }
 }
+//Extrae la fecha actual
 function calculaFecha()
 {
     var today = new Date();
@@ -416,7 +381,7 @@ function calculaFecha()
  */
 function generarCartasAleatorias(numCartas)
 {
-    return _.sample(cartasJuego,numCartas);
+    return _.sample([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],numCartas);
 }
 //Genera una posicion aleatoria para la pepita
 function generarPepitaOro()
@@ -428,9 +393,9 @@ function generarPepitaOro()
     {
         //NO TOCAR EL == (Si pones === falla)
         if (i==pepita)
-            salida.push("Gold");
+            salida.push(16);
         else
-          salida.push("NoGold");  
+            salida.push(17);  
     }
     return salida;
 }
@@ -438,7 +403,7 @@ function generarPepitaOro()
 function generarPartida(IDPartida,numJugadores,callback)
 {   
     //introducir casillas
-    accBBDD.generarTablero(IDPartida,generarPepitaOro(),function(err)
+    accBBDD.insertarPiezasIniciales(IDPartida,generarPepitaOro(),function(err)
     {
         
         if(err)
@@ -448,18 +413,15 @@ function generarPartida(IDPartida,numJugadores,callback)
         else
         {
             //generar lista de turnos
-            console.log("paso 1");
             generarDatosJugador(IDPartida,numJugadores,function(err){          
                 if(err)
                 {   
-                    console.log("paso 2");
                     callback(err);
                 }
                 else
                 {
                     //cambiar estado de la partida a 1
                     accBBDD.cambiarEstadoPartida(IDPartida,1,function(err){
-                        console.log("paso 3");
                         if(err)
                         {
                             callback(err);

@@ -139,6 +139,42 @@ module.exports=[
        down:true,
        left:true,
        rigth:true
+    },
+    {
+       nombre:"DNK",
+       imagen:"DNK.png",
+       propietario:null,
+       up:true,
+       down:true,
+       left:true,
+       rigth:true
+    },
+    {
+       nombre:"Gold",
+       imagen:"Gold.png",
+       propietario:null,
+       up:true,
+       down:true,
+       left:true,
+       rigth:true
+    },
+    {
+       nombre:"NoGold",
+       imagen:"NoGold.png",
+       propietario:null,
+       up:true,
+       down:true,
+       left:true,
+       rigth:true
+    },
+    {
+       nombre:"Start",
+       imagen:"T15.png",
+       propietario:null,
+       up:true,
+       down:true,
+       left:true,
+       rigth:true
     }
 ];
 
