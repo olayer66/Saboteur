@@ -41,7 +41,10 @@ servidor.use(middlewareSession);
 servidor.get("/",function(req,res)
 {
     res.status(200);
-    res.render("inicio",{IDUsuario:req.session.IDUsuario});
+    if (req.session.IDUsuario===undefined)
+        res.render("inicio");
+    else
+        res.redirect("/verpartidas")
 });
 
 servidor.get("/nuevousuario",function(req,res)
@@ -106,7 +109,7 @@ servidor.get("/desconectar",function(req,res)
 {
     res.status(200);
     req.session.destroy();
-    res.render("inicio",{IDUsuario:undefined});
+    res.render("inicio");
 });
 
 //Metodos GET para botones de ver partidas

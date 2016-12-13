@@ -36,8 +36,8 @@
                             <th>Nombre</th>
                             <th>Jugadores</th>
                             <th>Jug. maximos</th>
-                            <th>Turnos restantes</th>
-                            <th>Turnos</th>
+                            <th>Turnos jugados</th>
+                            <th>Turnos totales</th>
                             <th>Fecha</th>
                         </tr>
                         <% partidas.parEnJuego.forEach(function(obj){%>
@@ -45,8 +45,8 @@
                             <td><%=obj.Nombre%></td>
                             <td><%=obj.Num_Jugadores%></td>
                             <td><%=obj.Num_Max_Jugadores%></td>
-                            <td><%=obj.Turnos%></td>
-                            <td><%=obj.numTurnos%></td>
+                            <td><%=obj.Turno%></td>
+                            <td><%=obj.Num_Turnos%></td>
                             <td><%=obj.Fecha_Creacion%></td>
                             <td>
                                 <a href="/entrarpartida/<%=obj.ID_Partida%>"><img src="images/piedra_entrar.png" alt="borrar" id="imgtabla"></a>
@@ -70,7 +70,7 @@
                             <td><%=obj.Nombre%></td>
                             <td><%=obj.Num_Jugadores%></td>
                             <td><%=obj.Num_Max_Jugadores%></td>
-                            <td><%=obj.numTurnos%></td>
+                            <td><%=obj.Num_Turnos%></td>
                             <td><%=obj.Fecha_Creacion%></td>
                         </tr> 
                    <%});%> 
@@ -91,7 +91,7 @@
                             <td><%=obj.Nombre%></td>
                             <td><%=obj.Num_Jugadores%></td>
                             <td><%=obj.Num_Max_Jugadores%></td>
-                            <td><%=obj.numTurnos%></td>
+                            <td><%=obj.Num_Turnos%></td>
                             <td><%=obj.Fecha_Creacion%></td>
                             <td>
                                 <a href="/unirsepartida/<%=obj.ID_Partida%>"><img src="images/piedra_unirse.png" alt="borrar" id="imgtabla"></a>
@@ -115,7 +115,7 @@
                             <td><%=obj.Nombre%></td>
                             <td><%=obj.Num_Jugadores%></td>
                             <td><%=obj.Num_Max_Jugadores%></td>
-                            <td><%=obj.numTurnos%></td>
+                            <td><%=obj.Num_Turnos%></td>
                             <td><%=obj.Fecha_Creacion%></td>
                             <td>
                                 <a href="/borrarpartida/<%=obj.ID_Partida%>"><img src="images/piedra_borrar.png" alt="borrar" id="imgtabla"></a>
@@ -130,7 +130,7 @@
                         <tr>
                             <th>Nombre</th>
                             <th>Jugadores</th>
-                            <th>Ganador</th>
+                            <th>¿Has ganado?</th>
                             <th>Turnos</th>
                             <th>Fecha</th>
                         </tr>

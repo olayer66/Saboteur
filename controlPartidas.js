@@ -394,8 +394,20 @@ function generarTipos(numJugadores)
 }
 function calculaFecha()
 {
-    var fecha= new Date();
-    return fecha.getDay()+"/"+fecha.getMonth()+"/"+ fecha.getFullYear();
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    if(dd<10) {
+        dd='0'+dd
+    } 
+
+    if(mm<10) {
+        mm='0'+mm
+    } 
+    today = dd+'/'+mm+'/'+yyyy;
+    return today;
 }
 /*
  * Generar un numero N de cartas aleatorias para la mano 
@@ -504,6 +516,8 @@ function finalizarPartida(TipoFinal,ganador,callback){
 //Extrae las partidas que estan disponibles para el usuario
 function partidasDisponibles(IDUsuario,callback)
 {
+    var i=0;
+    var x=0;
     accBBDD.partidasUsuarioIguales(IDUsuario,function(err,asignadas){
         if(err)
         {
@@ -518,15 +532,39 @@ function partidasDisponibles(IDUsuario,callback)
                 }
                 else
                 {
-                    for (var i=0;i<partidas.length;i++)
+                    console.log("partidas:" +partidas[0].ID_Partida);
+                    console.log("asignadas:"+ asignadas);
+                    console.log("partidas:"+ partidas);
+                    console.log("valor 1:"+partidas.length);
+                    console.log("valor 2:"+asignadas.length);
+                    if(asignadas[0]!==undefined && partidas[0]!==undefined)
                     {
-                        for (var x=0;x<asignadas.length;x++)
+                        while (i<partidas.length && partidas[0]!==undefined)
                         {
-                            if(asignadas[x].ID_Partida== partidas[i].ID_Partida)
-                                partidas.splice(i,1);
+                            while (x<asignadas.length && partidas[0]!==undefined)
+                            {
+                                console.log(`x = ${x}, i = ${i}, asignada = ${asignadas[x]}, partida = ${partidas[i]}`)
+                                if(asignadas[x].ID_Partida== partidas[i].ID_Partida)
+                                    partidas.splice(i,1);
+                                x++;
+                            }
+                            x=0;
+                            i++;
                         }
+                        callback(null,partidas);                  
                     }
-                    callback(null,partidas);                  
+                    else if(asignadas[0]===undefined && partidas[0]!==undefined)
+                    {
+                        callback(null,partidas);
+                    }
+                    else if(asignadas[0]===undefined && partidas[0]===undefined)
+                    {
+                        callback(null,[]);
+                    }
+                    else
+                    {
+                        callback(new Error("Existen aignaciones a partidas inexistentes"),null);
+                    }
                 }
             });     
         }

@@ -8,6 +8,7 @@ module.exports=[
     {
        nombre:"blockSup",
        imagen:"T1.png",
+       propietario:null,
        up:false,
        down:true,
        left:false,
@@ -16,6 +17,7 @@ module.exports=[
     {
        nombre:"blockLeft",
        imagen:"T2.png",
+       propietario:null,
        up:false,
        down:false,
        left:false,
@@ -24,6 +26,7 @@ module.exports=[
     {
        nombre:"blockdown",
        imagen:"T4.png",
+       propietario:null,
        up:true,
        down:false,
        left:false,
@@ -32,6 +35,7 @@ module.exports=[
     {
        nombre:"blockRigth",
        imagen:"T8.png",
+       propietario:null,
        up:false,
        down:false,
        left:true,
@@ -40,6 +44,7 @@ module.exports=[
     {
        nombre:"GiroLeftUp",
        imagen:"T12.png",
+       propietario:null,
        up:true,
        down:false,
        left:true,
@@ -48,6 +53,7 @@ module.exports=[
     {
        nombre:"GiroDownRigth",
        imagen:"T3.png",
+       propietario:null,
        up:false,
        down:true,
        left:false,
@@ -56,6 +62,7 @@ module.exports=[
     {
        nombre:"GiroUpRigth",
        imagen:"T6.png",
+       propietario:null,
        up:true,
        down:false,
        left:false,
@@ -64,6 +71,7 @@ module.exports=[
     {
        nombre:"GiroLeftDown",
        imagen:"T9.png",
+       propietario:null,
        up:false,
        down:true,
        left:true,
@@ -72,6 +80,7 @@ module.exports=[
     {
        nombre:"CruceUp",
        imagen:"T14.png",
+       propietario:null,
        up:true,
        down:false,
        left:true,
@@ -80,6 +89,7 @@ module.exports=[
     {
        nombre:"CruceDown",
        imagen:"T11.png",
+       propietario:null,
        up:false,
        down:true,
        left:true,
@@ -88,6 +98,7 @@ module.exports=[
     {
        nombre:"CruceLeft",
        imagen:"T13.png",
+       propietario:null,
        up:true,
        down:true,
        left:true,
@@ -96,6 +107,7 @@ module.exports=[
     {
        nombre:"CruceRigth",
        imagen:"T7.png",
+       propietario:null,
        up:true,
        down:true,
        left:false,
@@ -104,6 +116,7 @@ module.exports=[
     {
        nombre:"rectaUpDown",
        imagen:"T5.png",
+       propietario:null,
        up:true,
        down:true,
        left:false,
@@ -112,6 +125,7 @@ module.exports=[
     {
        nombre:"rectaLeftRigth",
        imagen:"T10.png",
+       propietario:null,
        up:false,
        down:false,
        left:true,
@@ -120,6 +134,7 @@ module.exports=[
     {
        nombre:"Cruce",
        imagen:"T15.png",
+       propietario:null,
        up:true,
        down:true,
        left:true,
