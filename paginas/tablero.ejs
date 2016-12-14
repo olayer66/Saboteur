@@ -36,18 +36,27 @@
 	<!--Cuerpo-->
         <div class="cuerpo">
             
-            <div  class="tablero">
+            <div class="jugadoresPartida">
+                <% partidas.parEnJuego.forEach(function(){%>
+                    <ul>
+                        <li><%=jugadores.imagen%></li>
+                        <li><%=jugadores.nombre%></li>
+                    </ul> 
+                <%});%>
+            </div>
+            
+            <div  class="casillasTablero">
                 <table>
                     <%= var i=0; %>
                     <% while(i<49){ %>
                     <tr>
-                        <td><% casillasPartida[i].imagen %></td>
-                        <td><% casillasPartida[i+1].imagen %></td>
-                        <td><% casillasPartida[i+2].imagen %></td>
-                        <td><% casillasPartida[i+3].imagen %></td>
-                        <td><% casillasPartida[i+4].imagen %></td>
-                        <td><% casillasPartida[i+5].imagen %></td>
-                        <td><% casillasPartida[i+6].imagen %></td>
+                        <td><% tablero[i].imagen %></td>
+                        <td><% tablero[i+1].imagen %></td>
+                        <td><% tablero[i+2].imagen %></td>
+                        <td><% tablero[i+3].imagen %></td>
+                        <td><% tablero[i+4].imagen %></td>
+                        <td><% tablero[i+5].imagen %></td>
+                        <td><% tablero[i+6].imagen %></td>
 
                         <%= i=i+7 %>
                     </tr>
@@ -55,10 +64,20 @@
                 </table>
             </div>
             
-            <div class="manos">
+            <div class="opcionesJugador">
                 
+                <div class="">
+                    
+                </div>
+                
+                <div class="cartas">
+                    
+                </div>
+                
+                <div class="">
+                    
+                </div>
             </div>
-            
         </div>
     </body>
 </html>
