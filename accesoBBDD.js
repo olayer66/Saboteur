@@ -103,7 +103,7 @@ function conectar(datos,callback)
                 } 
                 else 
                 {
-                    callback(null,rows[0].ID_usuario);
+                    callback(null,rows);
                     conexion.end();
                 }
             }); 
@@ -651,7 +651,6 @@ function partidasUsuarioNoIguales(ID,callback)
     {
         query="SELECT * FROM Partidas  WHERE Creador<> ? AND Estado_Partida=0";
         valoresEntrada=[ID];
-        
         //Conectamos con la consulta requerida
         handleDisconnect(conexion);
         conexion.connect(function(err)

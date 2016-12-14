@@ -494,16 +494,16 @@ function partidasDisponibles(IDUsuario,callback)
                 }
                 else
                 {
-                    console.log("partidas:" +partidas[0].ID_Partida);
+//                    console.log("partidas:" +partidas[0].ID_Partida);
                     console.log("asignadas:"+ asignadas);
                     console.log("partidas:"+ partidas);
-                    console.log("valor 1:"+partidas.length);
-                    console.log("valor 2:"+asignadas.length);
-                    if(asignadas[0]!==undefined && partidas[0]!==undefined)
+                   console.log("valor 1:"+partidas.length);
+                   console.log("valor 2:"+asignadas.length);
+                    if(asignadas[0]!==undefined && partidas[0]!==undefined && partidas.length> 0)
                     {
-                        while (i<partidas.length && partidas[0]!==undefined)
+                        while (i<partidas.length && partidas[0]!==undefined && partidas.length> 0)
                         {
-                            while (x<asignadas.length && partidas[0]!==undefined)
+                            while (x<asignadas.length && asignadas.length>0 && partidas[0]!==undefined)
                             {
                                 console.log(`x = ${x}, i = ${i}, asignada = ${asignadas[x]}, partida = ${partidas[i]}`)
                                 if(asignadas[x].ID_Partida== partidas[i].ID_Partida)
@@ -515,11 +515,11 @@ function partidasDisponibles(IDUsuario,callback)
                         }
                         callback(null,partidas);                  
                     }
-                    else if(asignadas[0]===undefined && partidas[0]!==undefined)
+                    else if((asignadas[0]===undefined || asignadas.length<=0) && partidas[0]!==undefined && partidas.length> 0)
                     {
                         callback(null,partidas);
                     }
-                    else if(asignadas[0]===undefined && partidas[0]===undefined)
+                    else if(partidas[0]===undefined || partidas.length<= 0)
                     {
                         callback(null,[]);
                     }

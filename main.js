@@ -287,19 +287,35 @@ servidor.post("/loginusuario",facMulter.none(), function(req, res)
                 }
                 else
                 {
-                    res.status(200);
-                    req.session.IDUsuario=salida;
-                    //Caducidad de la sesion 1 hora
-                    var hour = 3600000;
-                    req.session.cookie.expires = new Date(Date.now() + hour);
-                    req.session.cookie.maxAge = hour;
-                    res.redirect("/verpartidas");
+                    if(salida!==undefined && salida.length>0)
+                    {
+                        res.status(200);
+                        console.log("ID usuario: "+salida[0].ID_usuario);
+                        req.session.IDUsuario=salida[0].ID_usuario;
+                        //Caducidad de la sesion 1 hora
+                        var hour = 3600000;
+                        req.session.cookie.expires = new Date(Date.now() + hour);
+                        req.session.cookie.maxAge = hour;
+                        res.redirect("/verpartidas");
+                    }
+                    else
+                    {
+                        res.status(200);
+                        var error=[];
+                        var miError={
+                            msg:"Usuario o contraseña no valido",
+                            value:""
+                        }
+                        error.push(miError);
+                        res.render("loginusuario",{errores:error});
+                    }
                 }
             });
         } 
         else 
         {
              res.status(200);
+             console.log(result.array());
              res.render("loginusuario",{errores:result.array()});
         }
     });
@@ -373,6 +389,6 @@ servidor.listen(config.puerto, function(err) {
     if (err) {
         console.log("Error al abrir el puerto "+config.puerto+": " + err);
     } else {
-        console.log("Servidor escuchando en el puerto"+config.puerto+".");
+        console.log("Servidor escuchando en el puerto "+config.puerto+".");
     }
 });
