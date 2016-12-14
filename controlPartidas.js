@@ -212,7 +212,47 @@ function asignarUsuarioPartida(IDPartida,IDUsuario,callback)
 }
 function mostrarPartida(IDPartida,IDUsuario,callback)
 {
-    
+    //Sacar tablero
+    extraerTablero(IDPartida,function(err,tableros){
+        if(err)
+        {
+            callback(err);
+        }
+        else
+        {
+            //sacar jugadores
+            extraerJugadores(IDPartida,function (err,jugadores){
+                if(err)
+                {
+                    callback(err,null);
+                }
+                else
+                {
+                    //sacar turnos de partida y turno actual
+                    extraerTurnos(IDPartida,jugadores,function(err,turnos,maxTurnos,turnoActual){
+                        if(err)
+                        {
+                            callback(err,null);
+                        }
+                        else
+                        {
+                            //Sacar mano del jugador
+                            extraerManoJugador(IDPartida,IDUsuario,jugadores.length,function(err,mano){
+                                if(err)
+                                {
+                                    callback(err,null);
+                                }
+                                else
+                                {
+                                    //Salida del callback ¿?
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });   
 }
 function quitarUsuarioPartida(IDPartida,IDUsuario,callback)
 {
@@ -489,6 +529,76 @@ function generarDatosJugador(IDPartida,numJugadores,callback)
 */
 function finalizarPartida(TipoFinal,ganador,callback){
     
+}
+//Extrae el tablero de la BBDD
+function extraerTablero(IDPartida,callback)
+{
+    var tablero=[];
+    accBBDD.extraerPiezas(IDPartida,function (err,piezas){
+        if(err)
+        {
+            callback(err,null);
+        }
+        else
+        {
+            piezas.forEach(function(pieza){
+                tablero[pieza.Pos_Pieza]=cartasJuego[pieza.Tipo_Pieza];
+                tablero[pieza.Pos_Pieza].Propierario=pieza.Propietario;
+            });
+            callback(null,tablero);
+        }
+    });
+}
+//Extrae los datos de los jugadores asociados a una partida
+function extraerJugadores(IDPartida,callback)
+{
+    accBBDD.extraerUsuariosPartida(IDPartida,function(err,usuarios){
+        if(err)
+        {
+            callback(err,null);
+        }
+        else
+        {
+            return (null,usuarios);
+        }
+    });
+}
+//Extrae los datos relativos a los turnos de la partida y el poseedor del turno
+function extraerTurnos(IDPartida,jugadores,callback)
+{
+    var nick;
+    accBBDD.devolverTurnosPartida(IDPartida,function(err,salida){
+        if(err)
+        {
+            callback(err,null,null,null);
+        }
+        else
+        {
+            jugadores.forEach(function (jugador){
+                if(jugador.Pos_turno===salida[0].Turno_juego)
+                    nick=jugador.Nick;
+            });
+            callback(null,salida[0].Turno,salida[0].Num_turnos,nick);
+        }
+    });
+}
+//Extrae la mano del jugador
+function extraerManoJugador(IDPartida,IDUsuario,numJugadores,callback)
+{
+    var mano=[];
+    accBBDD.extraerManoJugador(IDPartida,IDUsuario,numJugadores,function(err,NunManos){
+        if(err)
+        {
+            callback(err,null);
+        }
+        else
+        {
+            NunManos.forEach(function(num){
+                mano.push(cartasJuego[num]);
+            });
+            callback(null,mano);
+        }
+    });
 }
 //Extrae las partidas que estan disponibles para el usuario
 function partidasDisponibles(IDUsuario,callback)
