@@ -31,7 +31,8 @@ module.exports={
     mostrarPartida:mostrarPartida,
     quitarUsuarioPartida:quitarUsuarioPartida,
     asignarUsuarioPartida:asignarUsuarioPartida,
-    pasarTurno:pasarTurno
+    pasarTurno:pasarTurno,
+    descartar:descartar
 };
 function crearPartida(IDUsuario,entrada,callback)
 {     
@@ -278,57 +279,94 @@ function quitarUsuarioPartida(IDPartida,IDUsuario,callback)
     });
 }
 //Funciones de Juego
-function pasarTurno(IDPartida,IDUsuario,callback)
+//El error es 0 para errores fatales el error es 1 para errores de partida
+function pasarTurno(IDPartida,IDUsuario,cartaUsada,callback)
 {
     var turno;
-    //Sumar turno y pasar turno al siguiente
+    //Estraemos los datos del turno
     accBBDD.devolverTurnosPartida(IDPartida,function(err,salida){
         if(err)
         {
-            callback(err);
+            callback(err,0);
         }
         else
         {
-            //Comprobar si no quedan turnos
-            if((salida[0].Turno +1)>salida[0].Num_turnos)
-            {
-
-                //Llamamos a finalizar partida
-                finalizarPartida(true,"S",function(err){
-                    if(err)
-                    {
-                        callback(err);
-                    }
-                    else
-                    {
-                        callback(null);
-                    }
-                });
-            }
-            else
-            {
-                if((salida[0].Turno_juego+1)>salida[0].Num_Max_Jugadores)
-                turno=1;
+            //comprobar si esta en la partida y es su turno
+            accBBDD.usuarioEstaPartida(IDPartida,IDUsuario,function(err,datos){
+                if(err)
+                {
+                    callback(err,0);
+                }
                 else
-                    turno=salida[0].Turno_juego+1;
-                //Sumanos turno y cambiamos el turno al siguiente jugador
-                accBBDD.sumarTurnoPartida(IDPartida,turno,function(err){
-                    if(err)
+                {
+                    if(datos[0]===undefined)
                     {
-                        callback(err);
+                        callback(new Error("No puedes jugar esta partida"),1);
+                    }
+                    else if(datos[0].Pos_Turno!==salida[0].Turno_juego)
+                    {
+                        callback(new Error("No es tu turno"),1);
                     }
                     else
                     {
-                        //Eliminar carta usada y sustituir por otra
-                        
+                        //Comprobar si no quedan turnos
+                        if((salida[0].Turno +1)>salida[0].Num_turnos)
+                        {
+
+                            //Llamamos a finalizar partida
+                            finalizarPartida(IDPartida,"S",function(err){
+                                if(err)
+                                {
+                                    callback(err,0);
+                                }
+                                else
+                                {
+                                    callback(null);
+                                }
+                            });
+                        }
+                        else
+                        {
+                            //calculamos el turno siguiente
+                            if((salida[0].Turno_juego+1)>salida[0].Num_Max_Jugadores)
+                                turno=1;
+                            else
+                                turno=salida[0].Turno_juego+1;
+                            //Sumanos turno y cambiamos el turno al siguiente jugador
+                            accBBDD.sumarTurnoPartida(IDPartida,turno,function(err){
+                                if(err)
+                                {
+                                    callback(err);
+                                }
+                                else
+                                {
+                                    //Eliminar carta usada y sustituir por otra
+                                    CambiarCarta(IDPartida,IDUsuario,cartaUsada,generarCartasAleatorias(1),function(err){
+                                        if(err)
+                                        {
+                                            callback(err);
+                                        }
+                                        else
+                                        {
+                                            callback(null);
+                                        }
+                                    });
+                                }
+                            });
+                        } 
                     }
-                });
-            } 
+                }
+            });
         }
-    });
+    });           
+}
+//Descarta la seleccion del usuario y genera una nueva carta
+function descartar(IDPartida,IDUsuario,cartaUsada,callback)
+{
     
 }
 /*===================================================FUNCIONES AUXILIARES==================================================*/
+//Extrae el numerod e turnos de la partida dependiendo del numero de usuarios
 function calculaTurnos(numJugadores)
 {
     switch (numJugadores)
@@ -353,6 +391,7 @@ function calculaTurnos(numJugadores)
                     
     }
 }
+//Devuelve un array aleatorio con el turno a asignar al jugador en la partida dependiendo del numero de usuarios
 function generarTurnos(numJugadores)
 {
     switch (numJugadores)
@@ -377,6 +416,7 @@ function generarTurnos(numJugadores)
                     
     }
 }
+//Devuelve un array aleatorio con el tipo de usuario (Saboteador o Buscador) a asignar al jugador en la partida dependiendo del numero de usuarios
 function generarTipos(numJugadores)
 {
     switch (numJugadores)
@@ -523,12 +563,34 @@ function generarDatosJugador(IDPartida,numJugadores,callback)
         }
     });
 }
-/*
- * Metodo para la finalizacion de una partida
- * Tipo final es TRUE si ganan los saboteradores y FALSE si ganan los mineros
-*/
-function finalizarPartida(TipoFinal,ganador,callback){
-    
+// Metodo para la finalizacion de una partida
+function finalizarPartida(IDPartida,ganador,callback)
+{
+    //Insertar ganador y cambiar el estado de la partida a finalizada(2)
+    accBBDD.finalizarPartida(IDPartida,ganador,function(err){
+      if(err)
+      {
+         callback(err); 
+      }
+      else
+      {
+          callback(null);
+      }
+    });
+}
+// Cambia una carta del jugador ya sea por descarte o por haber sido usada
+function CambiarCarta(IDPartida,IDUsuario,cartaUsada,callback)
+{
+    accBBDD.añadirCartaMano(IDPartida,IDUsuario,cartaUsada,generarCartasAleatorias(1),function(err){
+        if(err)
+        {
+            callback(err);
+        }
+        else
+        {
+            callback(null);
+        }
+    });
 }
 //Extrae el tablero de la BBDD
 function extraerTablero(IDPartida,callback)
@@ -582,7 +644,7 @@ function extraerTurnos(IDPartida,jugadores,callback)
         }
     });
 }
-//Extrae la mano del jugador
+//Extrae la mano aleatoria del jugador
 function extraerManoJugador(IDPartida,IDUsuario,numJugadores,callback)
 {
     var mano=[];
@@ -619,18 +681,12 @@ function partidasDisponibles(IDUsuario,callback)
                 }
                 else
                 {
-//                    console.log("partidas:" +partidas[0].ID_Partida);
-//                    console.log("asignadas:"+ asignadas);
-//                    console.log("partidas:"+ partidas);
-//                   console.log("valor 1:"+partidas.length);
-//                   console.log("valor 2:"+asignadas.length);
                     if(asignadas[0]!==undefined && partidas[0]!==undefined && partidas.length> 0)
                     {
                         while (i<partidas.length && partidas[0]!==undefined && partidas.length> 0)
                         {
                             while (x<asignadas.length && asignadas.length>0 && partidas[0]!==undefined)
                             {
-//                                console.log(`x = ${x}, i = ${i}, asignada = ${asignadas[x]}, partida = ${partidas[i]}`)
                                 if(asignadas[x].ID_Partida== partidas[i].ID_Partida)
                                     partidas.splice(i,1);
                                 x++;
@@ -675,7 +731,6 @@ function partidasEnJuego(IDUsuario,callback)
                 }
                 else
                 {
-                    console.log(partidas);
                     for (var i=0;i<partidas.length;i++)
                     {
                         for (var x=0;x<asignadas.length;x++)
