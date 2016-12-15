@@ -213,7 +213,7 @@ function asignarUsuarioPartida(IDPartida,IDUsuario,callback)
 function mostrarPartida(IDPartida,IDUsuario,callback)
 {
     //Sacar tablero
-    extraerTablero(IDPartida,function(err,tableros){
+    extraerTablero(IDPartida,function(err,tablero){
         if(err)
         {
             callback(err);
@@ -229,7 +229,7 @@ function mostrarPartida(IDPartida,IDUsuario,callback)
                 else
                 {
                     //sacar turnos de partida y turno actual
-                    extraerTurnos(IDPartida,jugadores,function(err,turnos,maxTurnos,turnoActual){
+                    extraerTurnos(IDPartida,jugadores,function(err,turno,maxTurnos,turnoActual){
                         if(err)
                         {
                             callback(err,null);
@@ -244,7 +244,7 @@ function mostrarPartida(IDPartida,IDUsuario,callback)
                                 }
                                 else
                                 {
-                                    //Salida del callback ¿?
+                                    callback(null, tablero, jugadores, mano, turnoActual, turno,maxTurnos);
                                 }
                             });
                         }
@@ -559,7 +559,7 @@ function extraerJugadores(IDPartida,callback)
         }
         else
         {
-            return (null,usuarios);
+            callback(null,usuarios);
         }
     });
 }

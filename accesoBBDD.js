@@ -434,7 +434,7 @@ function devolverTurnosPartida(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT Turnos,num_Turnos,Turno_juego,Num_Max_Jugadores FROM Partidas WHERE ID_partida= ?";
+        query="SELECT Turno,num_Turnos,Turno_juego,Num_Max_Jugadores FROM Partidas WHERE ID_partida= ?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
@@ -888,7 +888,7 @@ function extraerUsuariosPartida(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT B.ID_Usuario, B.Imagen, B.Nick, A.Pos_Turno FROM Asignacion_Partidas AS A Usuarios AS B WHERE A.ID_Usuario=B.ID_usuario AND A.ID_Partida= ?";
+        query="SELECT B.ID_Usuario, B.Imagen, B.Nick, A.Pos_Turno FROM asignacion_partidas AS A, usuarios AS B WHERE A.ID_Usuario=B.ID_usuario AND A.ID_Partida= ?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
@@ -1147,16 +1147,17 @@ function extraerPiezas (IDPartida,callback)
             query="SELECT Pos_Pieza,Tipo_Pieza,Propietario FROM Piezas_partida WHERE ID_Partida= ?";
             valoresEntrada=[IDPartida];
             //Conectamos con la consulta requerida
+            console.log(mysql.format(query,valoresEntrada));
             conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
             {
                 if (err) 
                 {
                     console.error(err);
-                    callback(err);
+                    callback(err,null);
                 } 
                 else 
                 {
-                    callback(null);
+                    callback(null,rows);
                     conexion.end();
                 }
             });

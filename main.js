@@ -168,10 +168,9 @@ servidor.get("/verpartida/:id", function(req, res)
        }
    }); 
 });
-servidor.get("/mostrarPartida/:id", function(req, res) 
+servidor.get("/entrarpartida/:id", function(req, res) 
 {
    res.status(200);
-   console.log("req de params: "+ req.params.id);
    controlPartidas.mostrarPartida(req.params.id, req.session.IDUsuario, function(err, tablero, jugadores, mano, jugador_turno, turno, turnos_max){
        if(err)
        {
@@ -183,7 +182,7 @@ servidor.get("/mostrarPartida/:id", function(req, res)
        else
        {
            res.status(200);
-           res.redirect("/tablero", {tablero:tablero, jugadores:jugadores, mano:mano, jugador_turno:jugador_turno, turno:turno, turnos_max:turnos_max});
+           res.render("tablero", {tablero:tablero, jugadores:jugadores, mano:mano, jugador_turno:jugador_turno, turno:turno, turnos_max:turnos_max});
        }
    }); 
 });
