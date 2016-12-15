@@ -168,11 +168,11 @@ servidor.get("/verpartida/:id", function(req, res)
        }
    }); 
 });
-servidor.get("/entrarpartida/:id", function(req, res) 
+servidor.get("/mostrarPartida/:id", function(req, res) 
 {
    res.status(200);
    console.log("req de params: "+ req.params.id);
-   controlPartidas.generarPartida(req.params.id,function(err){
+   controlPartidas.mostrarPartida(req.params.id, req.session.IDUsuario, function(err, tablero, jugadores, mano, jugador_turno, turno, turnos_max){
        if(err)
        {
            res.render("error",{cabecera:"400-La partida no esta en juego",
@@ -183,10 +183,12 @@ servidor.get("/entrarpartida/:id", function(req, res)
        else
        {
            res.status(200);
-           res.redirect("/verpartidas");
+           res.redirect("/tablero", {tablero:tablero, jugadores:jugadores, mano:mano, jugador_turno:jugador_turno, turno:turno, turnos_max:turnos_max});
        }
    }); 
 });
+
+
 //Metodos POST
 servidor.post("/nuevousuario",facMulter.single("imgPerfil"), function(req, res) 
 {
