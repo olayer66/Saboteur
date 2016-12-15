@@ -98,6 +98,8 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
-INSERT INTO Usuarios(Nick,Nombre,Apellidos,Contraseña,Fecha_Nac,Sexo,Imagen) VALUES (turre,Arturo,Marino,1234,20/01/2016,M,NULL);
-INSERT INTO Usuarios(Nick,Nombre,Apellidos,Contraseña,Fecha_Nac,Sexo,Imagen) VALUES (olayer,Jose,Sanchez,1234,21/01/2016,M,NULL);
-INSERT INTO Usuarios(Nick,Nombre,Apellidos,Contraseña,Fecha_Nac,Sexo,Imagen) VALUES (paco,Paco,Fernandez,1234,22/01/2016,M,NULL);
+INSERT INTO Usuarios(Nick,Nombre,Apellidos,Contraseña,Fecha_Nac,Sexo,Imagen) VALUES ('turre2', 'a', 'b', '1234', '16/12/1992', 'H', ?);
+
+
+INSERT INTO Usuarios(Nick,Nombre,Apellidos,Contraseña,Fecha_Nac,Sexo,Imagen) VALUES ('olayer','Jose','Sanchez','1234','21/01/2016','M',NULL);
+INSERT INTO Usuarios(Nick,Nombre,Apellidos,Contraseña,Fecha_Nac,Sexo,Imagen) VALUES ('paco','Paco','Fernandez','1234','22/01/2016','M',NULL);
