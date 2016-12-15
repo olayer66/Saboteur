@@ -405,7 +405,6 @@ function generarPartida(IDPartida,numJugadores,callback)
     //introducir casillas
     accBBDD.insertarPiezasIniciales(IDPartida,generarPepitaOro(),function(err)
     {
-        
         if(err)
         {
             callback(err);
