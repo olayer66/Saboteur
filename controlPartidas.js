@@ -28,6 +28,7 @@ module.exports={
     crearPartida:crearPartida,
     borrarPartida:borrarPartida,
     verPartidasUsuario:verPartidasUsuario,
+    mostrarPartida:mostrarPartida,
     quitarUsuarioPartida:quitarUsuarioPartida,
     asignarUsuarioPartida:asignarUsuarioPartida,
     pasarTurno:pasarTurno
@@ -209,6 +210,50 @@ function asignarUsuarioPartida(IDPartida,IDUsuario,callback)
         }
     });
 }
+function mostrarPartida(IDPartida,IDUsuario,callback)
+{
+    //Sacar tablero
+    extraerTablero(IDPartida,function(err,tableros){
+        if(err)
+        {
+            callback(err);
+        }
+        else
+        {
+            //sacar jugadores
+            extraerJugadores(IDPartida,function (err,jugadores){
+                if(err)
+                {
+                    callback(err,null);
+                }
+                else
+                {
+                    //sacar turnos de partida y turno actual
+                    extraerTurnos(IDPartida,jugadores,function(err,turnos,maxTurnos,turnoActual){
+                        if(err)
+                        {
+                            callback(err,null);
+                        }
+                        else
+                        {
+                            //Sacar mano del jugador
+                            extraerManoJugador(IDPartida,IDUsuario,jugadores.length,function(err,mano){
+                                if(err)
+                                {
+                                    callback(err,null);
+                                }
+                                else
+                                {
+                                    //Salida del callback ¿?
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });   
+}
 function quitarUsuarioPartida(IDPartida,IDUsuario,callback)
 {
     accBBDD.borrarUsuarioDePartida(IDPartida,IDUsuario,function(err){
@@ -365,11 +410,11 @@ function calculaFecha()
     var yyyy = today.getFullYear();
 
     if(dd<10) {
-        dd='0'+dd
+        dd='0'+dd;
     } 
 
     if(mm<10) {
-        mm='0'+mm
+        mm='0'+mm;
     } 
     today = dd+'/'+mm+'/'+yyyy;
     return today;
@@ -405,24 +450,30 @@ function generarPartida(IDPartida,numJugadores,callback)
     //introducir casillas
     accBBDD.insertarPiezasIniciales(IDPartida,generarPepitaOro(),function(err)
     {
+        console.log("paso 1");
         if(err)
         {
+            console.log("paso 2");
             callback(err);
         }
         else
         {
             //generar lista de turnos
+            console.log("paso 3");
             generarDatosJugador(IDPartida,numJugadores,function(err){          
                 if(err)
                 {   
+                    console.log("paso 4");
                     callback(err);
                 }
                 else
                 {
+                    console.log("paso 5");
                     //cambiar estado de la partida a 1
                     accBBDD.cambiarEstadoPartida(IDPartida,1,function(err){
                         if(err)
                         {
+                            console.log("paso 6");
                             callback(err);
                         }
                         else
@@ -440,15 +491,19 @@ function generarDatosJugador(IDPartida,numJugadores,callback)
 {
     var pos=0;
     var cartas;
+    console.log("paso 31");
     accBBDD.usuariosPartida(IDPartida,function(err,jugadores){
         if(err)
         {
+            console.log("paso 32");
             callback(err);
         }
         else
         {                
+            console.log("paso 33");
             var turnos=generarTurnos(numJugadores);
             var tipo=generarTipos(numJugadores);
+            console.log("paso 34");
             jugadores.forEach(function(jugador){
                 if(numJugadores>5)
                     cartas=generarCartasAleatorias(5);
@@ -458,6 +513,7 @@ function generarDatosJugador(IDPartida,numJugadores,callback)
                 {
                     if(err)
                     {
+                        console.log("paso 35");
                         callback(err);
                     }
                 });
@@ -473,6 +529,76 @@ function generarDatosJugador(IDPartida,numJugadores,callback)
 */
 function finalizarPartida(TipoFinal,ganador,callback){
     
+}
+//Extrae el tablero de la BBDD
+function extraerTablero(IDPartida,callback)
+{
+    var tablero=[];
+    accBBDD.extraerPiezas(IDPartida,function (err,piezas){
+        if(err)
+        {
+            callback(err,null);
+        }
+        else
+        {
+            piezas.forEach(function(pieza){
+                tablero[pieza.Pos_Pieza]=cartasJuego[pieza.Tipo_Pieza];
+                tablero[pieza.Pos_Pieza].Propierario=pieza.Propietario;
+            });
+            callback(null,tablero);
+        }
+    });
+}
+//Extrae los datos de los jugadores asociados a una partida
+function extraerJugadores(IDPartida,callback)
+{
+    accBBDD.extraerUsuariosPartida(IDPartida,function(err,usuarios){
+        if(err)
+        {
+            callback(err,null);
+        }
+        else
+        {
+            return (null,usuarios);
+        }
+    });
+}
+//Extrae los datos relativos a los turnos de la partida y el poseedor del turno
+function extraerTurnos(IDPartida,jugadores,callback)
+{
+    var nick;
+    accBBDD.devolverTurnosPartida(IDPartida,function(err,salida){
+        if(err)
+        {
+            callback(err,null,null,null);
+        }
+        else
+        {
+            jugadores.forEach(function (jugador){
+                if(jugador.Pos_turno===salida[0].Turno_juego)
+                    nick=jugador.Nick;
+            });
+            callback(null,salida[0].Turno,salida[0].Num_turnos,nick);
+        }
+    });
+}
+//Extrae la mano del jugador
+function extraerManoJugador(IDPartida,IDUsuario,numJugadores,callback)
+{
+    var mano=[];
+    accBBDD.extraerManoJugador(IDPartida,IDUsuario,numJugadores,function(err,NunManos){
+        if(err)
+        {
+            callback(err,null);
+        }
+        else
+        {
+            NunManos.forEach(function(num){
+                mano.push(cartasJuego[num]);
+            });
+            callback(null,mano);
+        }
+    });
 }
 //Extrae las partidas que estan disponibles para el usuario
 function partidasDisponibles(IDUsuario,callback)
@@ -494,17 +620,17 @@ function partidasDisponibles(IDUsuario,callback)
                 else
                 {
 //                    console.log("partidas:" +partidas[0].ID_Partida);
-                    console.log("asignadas:"+ asignadas);
-                    console.log("partidas:"+ partidas);
-                   console.log("valor 1:"+partidas.length);
-                   console.log("valor 2:"+asignadas.length);
+//                    console.log("asignadas:"+ asignadas);
+//                    console.log("partidas:"+ partidas);
+//                   console.log("valor 1:"+partidas.length);
+//                   console.log("valor 2:"+asignadas.length);
                     if(asignadas[0]!==undefined && partidas[0]!==undefined && partidas.length> 0)
                     {
                         while (i<partidas.length && partidas[0]!==undefined && partidas.length> 0)
                         {
                             while (x<asignadas.length && asignadas.length>0 && partidas[0]!==undefined)
                             {
-                                console.log(`x = ${x}, i = ${i}, asignada = ${asignadas[x]}, partida = ${partidas[i]}`)
+//                                console.log(`x = ${x}, i = ${i}, asignada = ${asignadas[x]}, partida = ${partidas[i]}`)
                                 if(asignadas[x].ID_Partida== partidas[i].ID_Partida)
                                     partidas.splice(i,1);
                                 x++;
@@ -535,11 +661,9 @@ function partidasDisponibles(IDUsuario,callback)
 function partidasEnJuego(IDUsuario,callback)
 {
     var salida=[];
-    console.log("paso 1");
     accBBDD.partidasUsuarioIguales(IDUsuario,function(err,asignadas){
         if(err)
         {
-            console.log("paso 2");
             callback(err,null);
         }
         else
@@ -547,23 +671,19 @@ function partidasEnJuego(IDUsuario,callback)
             accBBDD.partidasUsuarioEnJuego(IDUsuario,function(err,partidas){
                 if(err)
                 {
-                    console.log("paso 3");
                     callback(err,null);
                 }
                 else
                 {
-                    console.log("paso 4");
                     console.log(partidas);
                     for (var i=0;i<partidas.length;i++)
                     {
                         for (var x=0;x<asignadas.length;x++)
                         {
-                            console.log("Partida: "+asignadas[x].ID_Partida+" es giual a "+partidas[i].ID_Partida);
                             if(asignadas[x].ID_Partida== partidas[i].ID_Partida)
                                 salida.push(partidas[i]);
                         }
                     }
-                    console.log(salida);
                     callback(null,salida);                  
                 }
             });     
