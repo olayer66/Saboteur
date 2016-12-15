@@ -70,7 +70,7 @@ servidor.get("/verpartidas",function(req,res)
             if(err)
             {
                 res.status(400);
-                res.render("error",{cabecera:"400-Error al crear la cuenta",
+                res.render("error",{cabecera:"400-Error al mostrar las partidas",
                                     mensaje: err.message,
                                     pila: err.stack,
                                     pagina:"verpartidas"});
@@ -123,7 +123,7 @@ servidor.get("/borrarpartida/:id", function(req, res)
            res.render("error",{cabecera:"400-Error al borrar la partida",
                                mensaje: err.message,
                                pila: err.stack,
-                               pagina:"volverpartida"});
+                               pagina:"volverpartidas"});
        }
        else
        {
@@ -141,7 +141,7 @@ servidor.get("/unirsepartida/:id", function(req, res)
            res.render("error",{cabecera:"400-Error al asginar a la partida",
                                mensaje: err.message,
                                pila: err.stack,
-                               pagina:"volverpartida"});
+                               pagina:"volverpartidas"});
        }
        else
        {
@@ -160,7 +160,7 @@ servidor.get("/verpartida/:id", function(req, res)
            res.render("error",{cabecera:"400-La partida no esta disponible",
                                mensaje: err.message,
                                pila: err.stack,
-                               pagina:"volverpartida"});
+                               pagina:"volverpartidas"});
        }
        else
        {
@@ -382,6 +382,11 @@ servidor.post("/volvernuevo", function(req, res)
 {
    res.status(200);
    res.render("nuevousuario",{errores:null});
+});
+servidor.post("/volverpartidas", function(req, res) 
+{
+   res.status(200);
+   res.redirect("/verpartidas");
 });
 /*======================================INICIO DEL SERVIDOR==============================================*/
 //Abrimos el servidor a la escucha por el puerto 3000

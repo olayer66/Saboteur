@@ -62,18 +62,16 @@ body{
 }
 .cuerpo{
 	background-image:url("../images/back.jpg");
-	background-size: auto;
 	position:relative;
+        background-repeat:repeat;
 	float:left;
 	width: 100%;
-        height: 1024px;
+        height: 100vh;
 }
 .entrada{
     background-color: #F7FAC3;
-    
     padding: 10px;
     color: #000000;
-    position: absolute;
     width: 90%;
     z-index: 1;
     border-radius: 20px;

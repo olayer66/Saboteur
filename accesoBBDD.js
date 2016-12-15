@@ -1223,6 +1223,7 @@ function insertarPiezasIniciales (IDPartida,valores,callback)
         {
             query="INSERT Piezas_partida (ID_Partida,Pos_Pieza,Tipo_Pieza,Propietario) VALUES (?,?,?,?),(?,?,?,?),(?,?,?,?),(?,?,?,?)";
             valoresEntrada=[IDPartida,21,18,"partida",IDPartida,13,valores[0],"partida",IDPartida,27,valores[1],"partida",IDPartida,41,valores[2],"partida"];
+            console.log(mysql.format(query,valoresEntrada));
             //Conectamos con la consulta requerida
             conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
             {
