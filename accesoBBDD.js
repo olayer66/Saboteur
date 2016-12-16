@@ -41,6 +41,7 @@ module.exports={
     añadirVariablesJugador:añadirVariablesJugador,
     añadirCartaMano:añadirCartaMano,
     extraerManoJugador:extraerManoJugador,
+    extraerCartaManoJugador:extraerCartaManoJugador,
     //Piezas_Partida
     extraerPiezas:extraerPiezas,
     insertarPieza:insertarPieza,
@@ -1059,6 +1060,62 @@ function extraerManoJugador(IDPartida,IDUsuario,numJugadores,callback)
                 else 
                 {
                     callback(null,rows);
+                    conexion.end();
+                }
+            });
+        }
+        else
+        {
+            callback(new Error("La ID de usuario no es valido"));
+        }
+    }
+    else
+    {
+        callback(new Error("La ID de partida no es valido"));
+    }
+}
+function extraerCartaManoJugador(IDPartida,IDUsuario,carta,callback)
+{
+    var conexion = mysql.createConnection(config.conexionBBDD);
+    if(IDPartida!==null)
+    {
+        if(IDUsuario!==null)
+        {
+            query="SELECT ? FROM asignacion_partidas WHERE ID_Partida=? AND ID_Usuario=?";
+            valoresEntrada=[carta,IDPartida,IDUsuario];
+            //Conectamos con la consulta requerida
+            conexion.query(mysql.format(query,valoresEntrada),function(err,rows) 
+            {
+                if (err) 
+                {
+                    console.error(err);
+                    callback(err,null);
+                } 
+                else 
+                {
+                    switch (carta)
+                    {
+                        case "mano1":
+                            callback(null,rows[0].mano1);
+                            break;
+                        case "mano2":
+                            callback(null,rows[0].mano2);
+                            break;
+                        case "mano3":
+                            callback(null,rows[0].mano3);
+                            break;
+                        case "mano4":
+                            callback(null,rows[0].mano4);
+                            break;
+                        case "mano5":
+                            callback(null,rows[0].mano5);
+                            break;
+                        case "mano6":
+                            callback(null,rows[0].mano6);
+                            break;
+                        default:
+                        callback(new Error("Carta de la mano no valida"),null);    
+                    }
                     conexion.end();
                 }
             });
