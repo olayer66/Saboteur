@@ -150,15 +150,20 @@ body{
     height: 50px;
 }
 
-.tablero table {
+.casillasTablero table {
     border: 1px solid #ddd;
     padding: 0px;
     text-align: center;
 }
 
 .casillasTablero table tr td{
-    width: 250px;
-    height: 250px; 
+    width: 100px;
+    height: 100px; 
+}
+
+.casillasTablero table tr td img{
+    width: 100px;
+    height: 100px; 
 }
 
 .manos{

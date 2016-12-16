@@ -182,7 +182,6 @@ servidor.get("/entrarpartida/:id", function(req, res)
        else
        {
            res.status(200);
-           console.log(tablero);
            res.render("tablero", {IDUsuario: req.session.IDUsuario, tablero:tablero, jugadores:jugadores, mano:mano, jugador_turno:jugador_turno, turno:turno, turnos_max:turnos_max});
        }
    }); 
