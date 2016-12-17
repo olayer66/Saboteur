@@ -20,6 +20,7 @@ module.exports={
     devolverIDPartida:devolverIDPartida,
     añadirUsuarioPartida:añadirUsuarioPartida,
     quitarUsuarioPartida:quitarUsuarioPartida,
+    cambiarNumeroJugadores:cambiarNumeroJugadores,
     cambiarEstadoPartida:cambiarEstadoPartida,
     devolverEstadoPartida:devolverEstadoPartida,
     sumarTurnoPartida:sumarTurnoPartida,
@@ -349,7 +350,7 @@ function partidasPropias(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT * FROM partidas WHERE Creador=?";
+        query="SELECT * FROM partidas WHERE Creador=? AND Estado_Partida<>2";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
         handleDisconnect(conexion);
@@ -416,6 +417,33 @@ function quitarUsuarioPartida(ID,callback)
     if(ID!==null)
     {
         query="UPDATE partidas SET Num_Jugadores=Num_jugadores-1 WHERE ID_partida= ?";
+        valoresEntrada=[ID];
+        //Conectamos con la consulta requerida
+        conexion.query(mysql.format(query,valoresEntrada),function(err) 
+        {
+            if (err) 
+            {
+                console.error(err);
+                callback(err);
+            } 
+            else 
+            {
+                callback(null);
+                conexion.end();
+            }
+        });
+    }
+    else
+    {
+        callback(new Error("El ID de partida no es valido"),null);
+    }
+}
+function cambiarNumeroJugadores(ID,callback)
+{
+   var conexion = mysql.createConnection(config.conexionBBDD);
+    if(ID!==null)
+    {
+        query="UPDATE partidas SET Num_Max_Jugadores=Num_jugadores WHERE ID_partida= ?";
         valoresEntrada=[ID];
         //Conectamos con la consulta requerida
         conexion.query(mysql.format(query,valoresEntrada),function(err) 
@@ -792,7 +820,7 @@ function partidasUsuarioTerminadas(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario<> ? AND A.ID_Partida=B.ID_Partida AND B.Estado_Partida=2";
+        query="SELECT B.* FROM Asignacion_Partidas AS A, Partidas AS B WHERE A.ID_Usuario= ? AND A.ID_Partida=B.ID_Partida AND B.Estado_Partida=2";
         valoresEntrada=[ID];
         
         //Conectamos con la consulta requerida
@@ -832,7 +860,7 @@ function partidasUsuarioEnJuego(ID,callback)
     var conexion = mysql.createConnection(config.conexionBBDD);
     if(ID!==null)
     {
-        query="SELECT * FROM Partidas  WHERE Creador<> ? AND Estado_Partida=1";
+        query="SELECT * FROM Partidas  WHERE Estado_Partida=1";
         valoresEntrada=[ID];
         
         //Conectamos con la consulta requerida

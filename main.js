@@ -79,7 +79,7 @@ servidor.get("/verpartidas",function(req,res)
             {
                 //Cargamos la vista de partidas
                 res.status(200);
-                res.render("verpartidas",{partidas:vista});
+                res.render("verpartidas",{partidas:vista,IDUsuario:req.session.IDUsuario});
             }
         });
     }
@@ -116,8 +116,25 @@ servidor.get("/desconectar",function(req,res)
 servidor.get("/borrarpartida/:id", function(req, res) 
 {
    res.status(200);
-   console.log("req de params: "+ req.params.id);
    controlPartidas.borrarPartida(req.params.id,function(err){
+       if(err)
+       {
+           res.render("error",{cabecera:"400-Error al borrar la partida",
+                               mensaje: err.message,
+                               pila: err.stack,
+                               pagina:"volverpartidas"});
+       }
+       else
+       {
+           res.status(200);
+           res.redirect("/verpartidas");
+       }
+   }); 
+});
+servidor.get("/iniciarpartida/:id", function(req, res) 
+{
+   res.status(200);
+   controlPartidas.iniciarPartida(req.params.id,function(err){
        if(err)
        {
            res.render("error",{cabecera:"400-Error al borrar la partida",
@@ -153,7 +170,6 @@ servidor.get("/unirsepartida/:id", function(req, res)
 servidor.get("/verpartida/:id", function(req, res) 
 {
    res.status(200);
-   console.log("req de params: "+ req.params.id);
    controlPartidas.borrarPartida(req.params.id,function(err){
        if(err)
        {

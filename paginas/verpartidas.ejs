@@ -72,6 +72,11 @@
                             <td><%=obj.Num_Max_Jugadores%></td>
                             <td><%=obj.Num_Turnos%></td>
                             <td><%=obj.Fecha_Creacion%></td>
+                            <%if(obj.Num_Jugadores>=3 && obj.Creador==IDUsuario){%>
+                            <td>
+                                <a href="/iniciarpartida/<%=obj.ID_Partida%>"><img src="images/piedra_iniciar.png" alt="borrar" id="imgtabla"></a>
+                            </td>
+                            <%}%>
                         </tr> 
                    <%});%> 
                     </table>
@@ -117,9 +122,11 @@
                             <td><%=obj.Num_Max_Jugadores%></td>
                             <td><%=obj.Num_Turnos%></td>
                             <td><%=obj.Fecha_Creacion%></td>
+                            <%if(obj.Estado_Partida===0){%>
                             <td>
                                 <a href="/borrarpartida/<%=obj.ID_Partida%>"><img src="images/piedra_borrar.png" alt="borrar" id="imgtabla"></a>
                             </td>
+                            <%}%>
                         </tr> 
                    <%});%> 
                     </table>

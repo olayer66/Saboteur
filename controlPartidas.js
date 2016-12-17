@@ -31,6 +31,7 @@ module.exports={
     mostrarPartida:mostrarPartida,
     quitarUsuarioPartida:quitarUsuarioPartida,
     asignarUsuarioPartida:asignarUsuarioPartida,
+    iniciarPartida:iniciarPartida,
     pasarTurno:pasarTurno,
     descartar:descartar
 };
@@ -277,6 +278,38 @@ function quitarUsuarioPartida(IDPartida,IDUsuario,callback)
             });
         }
     });
+}
+function iniciarPartida(IDPartida,callback)
+{
+     accBBDD.cambiarNumeroJugadores(IDPartida,function(err)
+    {
+        if(err)
+        {
+            callback(err);
+        }
+        else
+        {
+            accBBDD.devolverJugadoresPartida(IDPartida,function(err,salida){
+                if(err)
+                {
+                    
+                }
+                else
+                {
+                    generarPartida(IDPartida,salida[0].Num_Max_Jugadores,function (err){
+                    if(err)
+                    {
+                        callback(err);
+                    }
+                    else
+                    {
+                        callback(null);
+                    }
+                });
+                }
+            });
+        }
+    }); 
 }
 //Funciones de Juego
 //El error es 0 para errores fatales el error es 1 para errores de partida

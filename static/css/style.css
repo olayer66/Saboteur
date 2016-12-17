@@ -145,6 +145,9 @@ body{
     color: white;
     text-align: center;
 }
+#tablaPartidas td {
+    height: 50px;
+}
 #imgtabla{
     width: 100px;
     height: 50px;
