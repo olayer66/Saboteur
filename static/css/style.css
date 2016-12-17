@@ -1,7 +1,16 @@
+@import '//fonts.googleapis.com/css?family=Bangers';
 body{
 	background: #51B6E0;
 	margin: 0px;
-	font-family: serif;
+}
+body h1{
+    font-family: 'Bangers';
+}
+body h2{
+    font-family: 'Asset';
+}
+body h3{
+    font-family: 'Asset';
 }
 .cabecera{
 }

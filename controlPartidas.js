@@ -327,7 +327,7 @@ function controlJugada(IDPartida,IDUsuario,cartaUsada,posTablero,callback)
         else
         {
             //Controlar la juagada
-            ctrlJugada.validarJugada(cartaUsada,posTablero,function(err){
+            ctrlJugada.validarJugada(IDPartida,IDUsuario,cartaUsada,posTablero,function(err){
                 if(err)
                 {
                     callback(err,0)

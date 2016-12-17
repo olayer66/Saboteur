@@ -45,6 +45,8 @@ module.exports={
     extraerCartaManoJugador:extraerCartaManoJugador,
     //Piezas_Partida
     extraerPiezas:extraerPiezas,
+    extraerUnaPieza:extraerUnaPieza,
+    extraerPiezasEntorno:extraerPiezasEntorno,
     insertarPieza:insertarPieza,
     insertarPiezasIniciales:insertarPiezasIniciales
 };
@@ -1292,6 +1294,62 @@ function extraerPiezas (IDPartida,callback)
     {
             query="SELECT Pos_Pieza,Tipo_Pieza,Propietario FROM Piezas_partida WHERE ID_Partida= ?";
             valoresEntrada=[IDPartida];
+            //Conectamos con la consulta requerida
+            console.log(mysql.format(query,valoresEntrada));
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
+            {
+                if (err) 
+                {
+                    console.error(err);
+                    callback(err,null);
+                } 
+                else 
+                {
+                    callback(null,rows);
+                    conexion.end();
+                }
+            });
+    }
+    else
+    {
+        callback(new Error("El ID de partida no es valido"));
+    }
+}
+function extraerUnaPieza (IDPartida,posicion,callback)
+{
+    var conexion = mysql.createConnection(config.conexionBBDD);
+    if(IDPartida!==null)
+    {
+            query="SELECT ID_Pieza FROM Piezas_partida WHERE ID_Partida= ? AND Pos_Pieza = ?";
+            valoresEntrada=[IDPartida,posicion];
+            //Conectamos con la consulta requerida
+            console.log(mysql.format(query,valoresEntrada));
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
+            {
+                if (err) 
+                {
+                    console.error(err);
+                    callback(err,null);
+                } 
+                else 
+                {
+                    callback(null,rows);
+                    conexion.end();
+                }
+            });
+    }
+    else
+    {
+        callback(new Error("El ID de partida no es valido"));
+    }
+}
+function extraerPiezasEntorno (IDPartida,posiciones,callback)
+{
+    var conexion = mysql.createConnection(config.conexionBBDD);
+    if(IDPartida!==null)
+    {
+            query="SELECT Tipo_Pieza FROM Piezas_partida WHERE ID_Partida= ? AND Pos_Pieza IN(?,?,?,?)";
+            valoresEntrada=[IDPartida,posiciones[0],posiciones[1],posiciones[2],posiciones[3]];
             //Conectamos con la consulta requerida
             console.log(mysql.format(query,valoresEntrada));
             conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
