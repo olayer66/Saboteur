@@ -145,8 +145,12 @@
                         <tr>
                             <td><%=obj.Nombre%></td>
                             <td><%=obj.Num_Jugadores%></td>
-                            <td><%=obj.Ganador%></td>
-                            <td><%=obj.Turnos%></td>
+                            <%if(obj.Ganador==obj.Tipo_Jugador){%>
+                                <td>SI</td>
+                            <%}else{%>
+                                <td>NO</td>
+                            <%}%>
+                            <td><%=obj.Turno%></td>
                             <td><%=obj.Fecha_Creacion%></td>
                             <td>
                                 <a href="/verpartida/<%=obj.ID_Partida%>"><img src="images/piedra_ver.png" alt="borrar" id="imgtabla"></a>

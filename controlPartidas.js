@@ -5,6 +5,7 @@ Creacion, modficacion y eliminacion de partidas.
 var _ = require("underscore");
 var accBBDD =require("./accesoBBDD");
 var cartasJuego= require("./cartasjuego");
+var ctrlJugada= require("./controlJugada");
 var partida= {
     IDPartida:null,
     nombre:null,
@@ -22,7 +23,7 @@ var vista={
     parDisponibles:null,
     parPropias:null,
     parTerminadas:null,
-    parEspera:null
+    parEspera:null,
 };
 module.exports={
     crearPartida:crearPartida,
@@ -33,7 +34,8 @@ module.exports={
     asignarUsuarioPartida:asignarUsuarioPartida,
     iniciarPartida:iniciarPartida,
     pasarTurno:pasarTurno,
-    descartar:descartar
+    controlJugada:controlJugada,
+    controlDescarte:controlDescarte
 };
 function crearPartida(IDUsuario,entrada,callback)
 {     
@@ -312,91 +314,67 @@ function iniciarPartida(IDPartida,callback)
     }); 
 }
 //Funciones de Juego
-//El error es 0 para errores fatales el error es 1 para errores de partida
-function pasarTurno(IDPartida,IDUsuario,cartaUsada,callback)
+//controla la jugada y cambia de turno si es correcta
+function controlJugada(IDPartida,IDUsuario,cartaUsada,posTablero,callback)
 {
-    var turno;
-    //Estraemos los datos del turno
-    accBBDD.devolverTurnosPartida(IDPartida,function(err,salida){
+    //Comprobamos que el usuario es valido y es su turno     
+    comprobarUsuario(IDPartida,IDUsuario,function(err,tipoErr)
+    {
         if(err)
         {
-            callback(err,0);
+            callback(err,tipoErr);
         }
         else
         {
-            //comprobar si esta en la partida y es su turno
-            accBBDD.usuarioEstaPartida(IDPartida,IDUsuario,function(err,datos){
+            //Controlar la juagada
+            ctrlJugada.validarJugada(cartaUsada,posTablero,function(err){
+                if(err)
+                {
+                    callback(err,0)
+                }
+                else
+                {
+                    //pasar turno
+                    pasarTurno(IDPartida,IDUsuario,cartaUsada,function(err){
+                        if(err)
+                        {
+                            callback(err,0);
+                        }
+                        else
+                        {
+                            callback(null);
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+//Descarta la seleccion del usuario y genera una nueva carta
+function controlDescarte(IDPartida,IDUsuario,cartaUsada,callback)
+{
+    //Comprobamos que el usuario es valido y es su turno     
+    comprobarUsuario(IDPartida,IDUsuario,function(err,tipoErr)
+    {
+        if(err)
+        {
+            callback(err,tipoErr);
+        }
+        else
+        {
+            //pasar turno
+            pasarTurno(IDPartida,IDUsuario,cartaUsada,function(err){
                 if(err)
                 {
                     callback(err,0);
                 }
                 else
                 {
-                    if(datos[0]===undefined)
-                    {
-                        callback(new Error("No puedes jugar esta partida"),1);
-                    }
-                    else if(datos[0].Pos_Turno!==salida[0].Turno_juego)
-                    {
-                        callback(new Error("No es tu turno"),1);
-                    }
-                    else
-                    {
-                        //Comprobar si no quedan turnos
-                        if((salida[0].Turno +1)>salida[0].Num_turnos)
-                        {
-
-                            //Llamamos a finalizar partida
-                            finalizarPartida(IDPartida,"S",function(err){
-                                if(err)
-                                {
-                                    callback(err,0);
-                                }
-                                else
-                                {
-                                    callback(null);
-                                }
-                            });
-                        }
-                        else
-                        {
-                            //calculamos el turno siguiente
-                            if((salida[0].Turno_juego+1)>salida[0].Num_Max_Jugadores)
-                                turno=1;
-                            else
-                                turno=salida[0].Turno_juego+1;
-                            //Sumanos turno y cambiamos el turno al siguiente jugador
-                            accBBDD.sumarTurnoPartida(IDPartida,turno,function(err){
-                                if(err)
-                                {
-                                    callback(err);
-                                }
-                                else
-                                {
-                                    //Eliminar carta usada y sustituir por otra
-                                    CambiarCarta(IDPartida,IDUsuario,cartaUsada,generarCartasAleatorias(1),function(err){
-                                        if(err)
-                                        {
-                                            callback(err);
-                                        }
-                                        else
-                                        {
-                                            callback(null);
-                                        }
-                                    });
-                                }
-                            });
-                        } 
-                    }
+                    callback(null);
                 }
             });
         }
-    });           
-}
-//Descarta la seleccion del usuario y genera una nueva carta
-function descartar(IDPartida,IDUsuario,cartaUsada,callback)
-{
-    
+    });
 }
 /*===================================================FUNCIONES AUXILIARES==================================================*/
 //Extrae el numerod e turnos de la partida dependiendo del numero de usuarios
@@ -595,6 +573,101 @@ function generarDatosJugador(IDPartida,numJugadores,callback)
             callback(null);
         }
     });
+}
+//Comproueba si el usuario esta en la partida y si es su turno
+function comprobarUsuario (IDPartida,IDUsuario)
+{
+    //Estraemos los datos del turno
+    accBBDD.devolverTurnosPartida(IDPartida,function(err,salida){
+        if(err)
+        {
+            callback(err,0);
+        }
+        else
+        {
+            //comprobar si esta en la partida y es su turno
+            accBBDD.usuarioEstaPartida(IDPartida,IDUsuario,function(err,datos){
+                if(err)
+                {
+                    callback(err,0);
+                }
+                else
+                {
+                    if(datos[0]===undefined)
+                    {
+                        callback(new Error("No puedes jugar esta partida"),1);
+                    }
+                    else if(datos[0].Pos_Turno!==salida[0].Turno_juego)
+                    {
+                        callback(new Error("No es tu turno"),1);
+                    }
+                    else
+                    {
+                                         
+                    }
+                }
+            });
+        }
+    });           
+}
+//El error es 0 para errores fatales el error es 1 para errores de partida
+function pasarTurno(IDPartida,IDUsuario,cartaUsada,callback)
+{
+    var turno;
+    //Estraemos los datos del turno
+    accBBDD.devolverTurnosPartida(IDPartida,function(err,salida){
+        if(err)
+        {
+            callback(err);
+        }
+        else
+        {      
+            //Comprobar si no quedan turnos
+            if((salida[0].Turno +1)>salida[0].Num_turnos)
+            {
+                //Llamamos a finalizar partida
+                finalizarPartida(IDPartida,"S",function(err){
+                    if(err)
+                    {
+                        callback(err);
+                    }
+                    else
+                    {
+                        callback(null);
+                    }
+                });
+            }
+            else
+            {
+                //calculamos el turno siguiente
+                if((salida[0].Turno_juego+1)>salida[0].Num_Max_Jugadores)
+                    turno=1;
+                else
+                    turno=salida[0].Turno_juego+1;
+                //Sumanos turno y cambiamos el turno al siguiente jugador
+                accBBDD.sumarTurnoPartida(IDPartida,turno,function(err){
+                    if(err)
+                    {
+                        callback(err);
+                    }
+                    else
+                    {
+                        //Eliminar carta usada y sustituir por otra
+                        CambiarCarta(IDPartida,IDUsuario,cartaUsada,generarCartasAleatorias(1),function(err){
+                            if(err)
+                            {
+                                callback(err);
+                            }
+                            else
+                            {
+                                callback(null);
+                            }
+                        });
+                    }
+                });
+            } 
+        }
+    });           
 }
 // Metodo para la finalizacion de una partida
 function finalizarPartida(IDPartida,ganador,callback)
