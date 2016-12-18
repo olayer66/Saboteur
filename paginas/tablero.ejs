@@ -60,18 +60,20 @@
                     <%});%>
                 </div>
                 
-                <div  class="casillasTablero">            
-                    <table>
+                <div  class="casillasTablero">
+                    <table class="tablaTablero">
                         
                         <tr>
                             <% for(var i=1; i<=49; i++) {%>
                                 <% if(tablero[i-1] !== undefined){%>
                                     
-                                    <td><img id="pieza" src="/images/<%=tablero[i-1].imagen%>" alt="pieza"></td>
-                                <% }else{ %>
-                                    <td onclick="javascript:location.href='/tablero/mano/:id'"></td>
+                                    <div class="imgWrap">    
+                                        <td><img src="/images/<%=tablero[i-1].imagen%>" alt="<%=tablero[i-1].propietario%>"></td>
+                                        <p class="imgDescription">Propietario: <%=tablero[i-1].propietario%></p>
+                                    </div>
+                                <% }else{ %>                                 
+                                    <td><img src="/images/Tback.png" alt="nada"></td>
                                 <% } %>
-
                                 <% if(i%7==0 && i!==49){%>
                                     </tr>
                                     <tr>
