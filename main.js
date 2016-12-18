@@ -44,7 +44,7 @@ servidor.get("/",function(req,res)
     if (req.session.IDUsuario===undefined)
         res.render("inicio");
     else
-        res.redirect("/verpartidas")
+        res.redirect("/verpartidas");
 });
 
 servidor.get("/nuevousuario",function(req,res)
@@ -65,6 +65,7 @@ servidor.get("/verpartidas",function(req,res)
     if(req.session.IDUsuario!==null)
     {
         //Extraemos las partidas creada por el usuario
+        console.log("IDUsuario: "+req.session.IDUsuario);
         controlPartidas.verPartidasUsuario(req.session.IDUsuario,function(err,vista)
         {
             if(err)
@@ -322,7 +323,7 @@ servidor.post("/loginusuario",facMulter.none(), function(req, res)
                         var miError={
                             msg:"Usuario o contraseña no valido",
                             value:""
-                        }
+                        };
                         error.push(miError);
                         res.render("loginusuario",{errores:error});
                     }
