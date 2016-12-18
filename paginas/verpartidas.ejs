@@ -12,6 +12,10 @@
           <div class="cabecera">
                     <div id="logo"><img src="images/Logo.png" alt="logo"></div>
           </div>
+           <div class="conectado"> 
+              Conectado como <%=usuarioConectado%>
+          </div>
+          
           <div id="fondoMenu">
             <img src="images/entrada_cueva.png" alt="logoDer">
           </div>
@@ -29,6 +33,12 @@
 	<!--Cuerpo-->
         <div class="cuerpo">           
             <div class="entrada">
+                
+                <div>
+                    
+                    <h1>Bienvenido <%= nombre%> <%= apellidos%></h1>
+                </div>
+                
                 <h1>Partidas En juego</h1>
                 <div id="partidasEnJuego">
                     <Table id="tablaPartidas">

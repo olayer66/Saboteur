@@ -5,6 +5,8 @@
         <link rel="shortcut icon" type="image/png" href="/images/favicon.png"/>
         <link rel="stylesheet" type="text/css"  href="/css/style.css">
         <meta charset="UTF-8">
+ 
+        
     </head>
     <body>
         <div class="cabeceraYMenu">
@@ -12,13 +14,17 @@
           <div class="cabecera">
                     <div id="logo"><img src="/images/Logo.png" alt="logo"></div>
           </div>
+          
+          <div class="conectado"> 
+              Conectado como <%=usuarioConectado%>
+          </div>
+          
             <div id="fondoMenu">
               <img src="/images/entrada_cueva.png" alt="logoDer">
             </div>
             <!--Menu-->
             <div class="menu">
     		<ul>
-                
                     <li id="boton"><a href="/desconectar"> <img id="imgBoton" src="/images/piedra_cerrar_sesion.png" alt="Cerrar sesion"></a></li>
                     <li id="boton"><a href="/verpartidas"> <img id="imgBoton" src="/images/piedra_ver_partidas.png"  alt="Ver partidas"> </a></li>
                 </ul>
@@ -46,8 +52,7 @@
                     <% jugadores.forEach(function(obj){ %>
                     <ul>
                         
-                        <li><img id="jugador" src="/images/defecto.png" alt="Jugador por defecto"></li>
-                       
+                        <li><img id="jugador" src="/images/defecto.png" alt="Jugador por defecto"></li>                     
                         <li><%=obj.Nick%></li>
                     </ul>
                     <%});%>
@@ -55,13 +60,14 @@
                 
                 <div  class="casillasTablero">            
                     <table>
+                        
                         <tr>
                             <% for(var i=1; i<=49; i++) {%>
                                 <% if(tablero[i-1] !== undefined){%>
                                     
                                     <td><img id="pieza" src="/images/<%=tablero[i-1].imagen%>" alt="pieza"></td>
                                 <% }else{ %>
-                                    <td></td>
+                                    <td onclick="javascript:location.href='/tablero/mano/:id'"></td>
                                 <% } %>
 
                                 <% if(i%7==0 && i!==49){%>

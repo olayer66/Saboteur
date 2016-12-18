@@ -64,25 +64,40 @@ servidor.get("/verpartidas",function(req,res)
     //si existe login
     if(req.session.IDUsuario!==null)
     {
-        //Extraemos las partidas creada por el usuario
-        console.log("IDUsuario: "+req.session.IDUsuario);
-        controlPartidas.verPartidasUsuario(req.session.IDUsuario,function(err,vista)
-        {
-            if(err)
+        
+        accBBDD.mostrarUsuario(req.session.IDUsuario,function(err,salida)
             {
-                res.status(400);
-                res.render("error",{cabecera:"400-Error al mostrar las partidas",
-                                    mensaje: err.message,
-                                    pila: err.stack,
-                                    pagina:"verpartidas"});
-            }
-            else
-            {
-                //Cargamos la vista de partidas
-                res.status(200);
-                res.render("verpartidas",{partidas:vista,IDUsuario:req.session.IDUsuario});
-            }
-        });
+                if(err)
+                {
+                    res.status(400);
+                    res.render("error",{cabecera:"400-Error al cargar usuario",
+                                        mensaje: err.message,
+                                        pila: err.stack,
+                                        pagina:"verpartidas"});
+                }
+                else
+                {
+                    //Extraemos las partidas creada por el usuario
+                    controlPartidas.verPartidasUsuario(req.session.IDUsuario,function(err,vista)
+                    {
+                        if(err)
+                        {
+                            res.status(400);
+                            res.render("error",{cabecera:"400-Error al mostrar las partidas",
+                                                mensaje: err.message,
+                                                pila: err.stack,
+                                                pagina:"verpartidas"});
+                        }
+                        else
+                        {
+                            //Cargamos la vista de partidas
+                            res.status(200);
+                            res.render("verpartidas",{partidas:vista,IDUsuario:req.session.IDUsuario, usuarioConectado:salida[0].Nick ,nombre:salida[0].Nombre, apellidos:salida[0].Apellidos});
+                        }
+                    });
+                }
+            });
+       
     }
     else
     {
@@ -96,8 +111,22 @@ servidor.get("/crearpartida",function(req,res)
     //si existe login
     if(req.session.IDUsuario!==null)
     {
-        res.status(200);
-        res.render("nuevapartida",{errores:null});
+        accBBDD.mostrarUsuario(req.session.IDUsuario,function(err,salida)
+            {
+                if(err)
+                {
+                    res.render("error",{cabecera:"400-El usuario no esta identificadoo",
+                                        mensaje: err.message,
+                                        pila: err.stack,
+                                        pagina:"crearpartida"});
+                }
+                else
+                {
+                        res.status(200);
+                        res.render( "nuevapartida",{usuarioConectado:salida[0].Nick, errores:null});
+                }
+            });
+        
     }
     else
     {
@@ -189,6 +218,60 @@ servidor.get("/entrarpartida/:id", function(req, res)
 {
    res.status(200);
    controlPartidas.mostrarPartida(req.params.id, req.session.IDUsuario, function(err, tablero, jugadores, mano, jugador_turno, turno, turnos_max){
+       if(err)
+       {
+           res.render("error",{cabecera:"400-La partida no esta en juego",
+                               mensaje: err.message,
+                               pila: err.stack,
+                               pagina:"volverpartida"});
+       }
+       else
+       {
+            accBBDD.mostrarUsuario(req.session.IDUsuario,function(err,salida)
+            {
+                if(err)
+                {
+                    res.render("error",{cabecera:"400-El usuario n esta identificadoo",
+                                        mensaje: err.message,
+                                        pila: err.stack,
+                                        pagina:"volverpartida"});
+                }
+                else
+                {
+                         res.status(200);
+                         res.render("tablero", {IDUsuario: req.session.IDUsuario, usuarioConectado:salida[0].Nick, tablero:tablero, jugadores:jugadores, mano:mano, jugador_turno:jugador_turno, turno:turno, turnos_max:turnos_max});
+                }
+            });
+        }
+   }); 
+});
+
+servidor.get("/tablero/mano/:id", function(req, res)
+{
+    res.status(200);
+    req.session.mano= req.params.id;
+    controlPartidas.mostrarPartida(req.params.id, req.session.IDUsuario, function(err, tablero, jugadores, mano, jugador_turno, turno, turnos_max){
+       if(err)
+       {
+           res.render("error",{cabecera:"400-La partida no esta en juego",
+                               mensaje: err.message,
+                               pila: err.stack,
+                               pagina:"volverpartida"});
+       }
+       else
+       {
+           res.status(200);
+           res.render("tablero", {IDUsuario: req.session.IDUsuario, tablero:tablero, jugadores:jugadores, mano:mano, jugador_turno:jugador_turno, turno:turno, turnos_max:turnos_max});
+       }
+   }); 
+});
+
+servidor.get("/tablero/casilla/:id", function(req, res)
+{
+    res.status(200);
+    req.session.casilla = req.params.id;
+    
+    controlPartidas.mostrarPartida(req.params.id, req.session.IDUsuario, function(err, tablero, jugadores, mano, jugador_turno, turno, turnos_max){
        if(err)
        {
            res.render("error",{cabecera:"400-La partida no esta en juego",
@@ -406,6 +489,26 @@ servidor.post("/volverpartidas", function(req, res)
    res.status(200);
    res.redirect("/verpartidas");
 });
+
+servidor.post("/entrarpartida/:id", function(req, res) 
+{
+   res.status(200);
+   controlPartidas.mostrarPartida(req.params.id, req.session.IDUsuario, function(err, tablero, jugadores, mano, jugador_turno, turno, turnos_max){
+       if(err)
+       {
+           res.render("error",{cabecera:"400-La partida no esta en juego",
+                               mensaje: err.message,
+                               pila: err.stack,
+                               pagina:"volverpartida"});
+       }
+       else
+       {
+           res.status(200);
+           res.render("tablero", {IDUsuario: req.session.IDUsuario, tablero:tablero, jugadores:jugadores, mano:mano, jugador_turno:jugador_turno, turno:turno, turnos_max:turnos_max});
+       }
+   }); 
+});
+
 /*======================================INICIO DEL SERVIDOR==============================================*/
 //Abrimos el servidor a la escucha por el puerto 3000
 servidor.listen(config.puerto, function(err) {
