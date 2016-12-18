@@ -50,9 +50,10 @@
                             <th>Turnos jugados</th>
                             <th>Turnos totales</th>
                             <th>Fecha</th>
+                            <th>Turno</th>
                         </tr>
                         <% partidas.parEnJuego.forEach(function(obj){%>
-                        <%if(obj.Pos_turno===0){%>
+                        <%if(obj.esTurno===0){%>
                         <tr>
                         <%}else{%>
                         <tr id="seleccionado">
@@ -63,6 +64,7 @@
                             <td><%=obj.Turno%></td>
                             <td><%=obj.Num_Turnos%></td>
                             <td><%=obj.Fecha_Creacion%></td>
+                            <td><%=obj.Pos_turno%></td>
                             <td>
                                 <a href="/entrarpartida/<%=obj.ID_Partida%>"><img src="images/piedra_entrar.png" alt="borrar" id="imgtabla"></a>
                             </td>

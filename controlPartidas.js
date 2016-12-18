@@ -886,7 +886,7 @@ function partidasEnJuego(IDUsuario,callback)
 function esTurnoJugador(IDUsuario,partidas,callback)
 {
     partidas.forEach(function(partida){
-        accBBDD.turnoDelUsuario(IDUsuario,partida.ID_partida,function(err,turno){
+        accBBDD.turnoDelUsuario(partida.ID_partida,IDUsuario,function(err,turno){
             if(err)
             {
                 
