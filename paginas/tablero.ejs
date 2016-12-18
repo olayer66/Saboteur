@@ -19,9 +19,8 @@
             <div class="menu">
     		<ul>
                 
-                    <li id="boton"><a href="desconectar"> <img id="imgBoton" src="/images/piedra_cerrar_sesion.png" alt="Cerrar sesion"></a></li>
-                    <li id="boton"><a href="verpartidas"> <img id="imgBoton" src="/images/piedra_ver_partidas.png"  alt="Ver partidas"> </a></li>
-                    <li id="boton"><a href="crearPartida"><img id="imgBoton" src="/images/piedra_nueva_partida.png" alt="Crear partida"></a></li>
+                    <li id="boton"><a href="/desconectar"> <img id="imgBoton" src="/images/piedra_cerrar_sesion.png" alt="Cerrar sesion"></a></li>
+                    <li id="boton"><a href="/verpartidas"> <img id="imgBoton" src="/images/piedra_ver_partidas.png"  alt="Ver partidas"> </a></li>
                 </ul>
             </div>
         </div>
@@ -31,6 +30,23 @@
         <div class="cuerpo">
 
             <div class="entrada">
+                
+                <div class="informacion">
+                    <ul>
+                        <li>
+                            <%=jugador_turno%>
+                        </li>
+                        <li>
+                            <%console.log(turno + "/" +turnos_max);
+                            
+                            %>
+                            <%=turno%>/<%=turnos_max%>
+                        </li>
+                        
+                    </ul>
+                    
+                    
+                </div>
                 
                 <div class="mostrarJugadores">
                     <h2>Jugadores:</h2>
@@ -72,7 +88,6 @@
                     </div>
 
                     <div class="mano">
-                        <% console.log(mano);%>
                         <% mano.forEach(function(obj){ %>
                             <ul>
                                 <li><img id="jugador" src="/images/<%=obj.imagen%>" alt="Jugador por defecto"></li>
