@@ -285,3 +285,22 @@ body h3{
     margin-top: 10px;
     height: 100px;
 }
+
+.informacion{
+    background-color: #F7FAC3;
+    border:silver 3px inset;
+    margin-bottom: 10px;
+    margin-left: 216px;
+    height: 25px;
+    width: 700pX
+}
+
+.turnoJugador{
+    position:relative;
+    float:left;
+}
+
+.numTurno{
+    position:relative;
+    float:right;
+}

@@ -234,6 +234,7 @@ function mostrarPartida(IDPartida,IDUsuario,callback)
                 {
                     //sacar turnos de partida y turno actual
                     extraerTurnos(IDPartida,jugadores,function(err,turno,maxTurnos,turnoActual){
+                        console.log("a ----" +turnoActual);
                         if(err)
                         {
                             callback(err,null);
@@ -248,7 +249,8 @@ function mostrarPartida(IDPartida,IDUsuario,callback)
                                 }
                                 else
                                 {
-                                    callback(null, tablero, jugadores, mano, turnoActual, turno,maxTurnos);
+                                    console.log(maxTurnos);
+                                    callback(null, tablero, jugadores, mano, turnoActual, turno, maxTurnos);
                                 }
                             });
                         }
@@ -736,11 +738,12 @@ function extraerTurnos(IDPartida,jugadores,callback)
         else
         {
             jugadores.forEach(function (jugador){
-                if(jugador.Pos_turno===salida[0].Turno_juego)
+                
+                if(jugador.Pos_Turno===salida[0].Turno_juego){
                     nick=jugador.Nick;
+                }
             });
-            console.log("salida del turnos: "+salida[0].Turno+"|||"+salida[0].Num_turnos, nick);
-            callback(null,salida[0].Turno,salida[0].Num_turnos,nick);
+            callback(null,salida[0].Turno,salida[0].num_Turnos,nick);
         }
     });
 }

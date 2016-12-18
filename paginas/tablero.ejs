@@ -32,20 +32,12 @@
             <div class="entrada">
                 
                 <div class="informacion">
-                    <ul>
-                        <li>
-                            <%=jugador_turno%>
-                        </li>
-                        <li>
-                            <%console.log(turno + "/" +turnos_max);
-                            
-                            %>
-                            <%=turno%>/<%=turnos_max%>
-                        </li>
-                        
-                    </ul>
-                    
-                    
+                    <div class="turnoJugador">
+                        Turno: <%=jugador_turno%>
+                    </div>
+                    <div class="numTurno">
+                        <%=turno%>/<%=turnos_max%>
+                    </div> 
                 </div>
                 
                 <div class="mostrarJugadores">
