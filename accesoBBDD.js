@@ -1163,13 +1163,11 @@ function extraerCartaManoJugador(IDPartida,IDUsuario,carta,callback)
 function borrarAsignacionPartidas(ID,callback)
 {
     var conexion = mysql.createConnection(config.conexionBBDD);
-    console.log("el ID"+ID);
     if(ID!==null)
     {
         query="DELETE FROM Asignacion_Partidas WHERE ID_Partida= ?";
          valoresEntrada=[ID];
         //Conectamos con la consulta requerida
-        console.log(mysql.format(query, valoresEntrada));
         conexion.connect(function(err)
     {
         if (err) 
@@ -1295,7 +1293,6 @@ function extraerPiezas (IDPartida,callback)
             query="SELECT Pos_Pieza,Tipo_Pieza,Propietario FROM Piezas_partida WHERE ID_Partida= ?";
             valoresEntrada=[IDPartida];
             //Conectamos con la consulta requerida
-            console.log(mysql.format(query,valoresEntrada));
             conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
             {
                 if (err) 
@@ -1323,7 +1320,6 @@ function extraerUnaPieza (IDPartida,posicion,callback)
             query="SELECT ID_Pieza FROM Piezas_partida WHERE ID_Partida= ? AND Pos_Pieza = ?";
             valoresEntrada=[IDPartida,posicion];
             //Conectamos con la consulta requerida
-            console.log(mysql.format(query,valoresEntrada));
             conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
             {
                 if (err) 
@@ -1351,7 +1347,6 @@ function extraerPiezasEntorno (IDPartida,posiciones,callback)
             query="SELECT Tipo_Pieza FROM Piezas_partida WHERE ID_Partida= ? AND Pos_Pieza IN(?,?,?,?)";
             valoresEntrada=[IDPartida,posiciones[0],posiciones[1],posiciones[2],posiciones[3]];
             //Conectamos con la consulta requerida
-            console.log(mysql.format(query,valoresEntrada));
             conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
             {
                 if (err) 
@@ -1428,7 +1423,6 @@ function insertarPiezasIniciales (IDPartida,valores,callback)
         {
             query="INSERT Piezas_partida (ID_Partida,Pos_Pieza,Tipo_Pieza,Propietario) VALUES (?,?,?,?),(?,?,?,?),(?,?,?,?),(?,?,?,?)";
             valoresEntrada=[IDPartida,21,18,"partida",IDPartida,13,valores[0],"partida",IDPartida,27,valores[1],"partida",IDPartida,41,valores[2],"partida"];
-            console.log(mysql.format(query,valoresEntrada));
             //Conectamos con la consulta requerida
             conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
             {

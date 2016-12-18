@@ -3,6 +3,14 @@
     * nombre: nombre de la pieza
     * imagen: figura asociada
     * up,down,left,rigth : indican mediante true o false si son accesibles por ese borde
+    * piezas:
+    * de 0 a 14 -->piezas de juego
+    * 15 --> interrogacion
+    * 16 --> oro sin descubrir
+    * 17 --> no oro sin descubir
+    * 18 --> salida
+    * 19 --> oro descubierto
+    * 20 --> no oro descubierto
  */
 module.exports=[
     {
@@ -151,7 +159,7 @@ module.exports=[
     },
     {
        nombre:"Gold",
-       imagen:"Gold.png",
+       imagen:"DNK.png",
        propietario:null,
        up:true,
        down:true,
@@ -160,7 +168,7 @@ module.exports=[
     },
     {
        nombre:"NoGold",
-       imagen:"NoGold.png",
+       imagen:"DNK.png",
        propietario:null,
        up:true,
        down:true,
@@ -175,6 +183,24 @@ module.exports=[
        down:true,
        left:true,
        rigth:true
-    }
+    },
+    {
+       nombre:"VisGold",
+       imagen:"Gold.png",
+       propietario:null,
+       up:true,
+       down:true,
+       left:true,
+       rigth:true
+    },
+    {
+       nombre:"VisNoGold",
+       imagen:"NoGold.png",
+       propietario:null,
+       up:true,
+       down:true,
+       left:true,
+       rigth:true
+    },
 ];
 

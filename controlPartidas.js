@@ -327,7 +327,7 @@ function controlJugada(IDPartida,IDUsuario,cartaUsada,posTablero,callback)
         else
         {
             //Controlar la juagada
-            ctrlJugada.validarJugada(IDPartida,IDUsuario,cartaUsada,posTablero,function(err){
+            ctrlJugada.validarJugada(IDPartida,cartaUsada,posTablero,function(err){
                 if(err)
                 {
                     callback(err,0)
@@ -335,13 +335,17 @@ function controlJugada(IDPartida,IDUsuario,cartaUsada,posTablero,callback)
                 else
                 {
                     //pasar turno
-                    pasarTurno(IDPartida,IDUsuario,cartaUsada,function(err){
-                        if(err)
+                    pasarTurno(IDPartida,IDUsuario,cartaUsada,function(err,tipoError,valido,finalJuego){
+                        if(err && tipoError===0)
                         {
                             callback(err,0);
                         }
                         else
                         {
+                            if (err && tipoError===1)
+                            {
+                                callback(err,1);
+                            }    
                             callback(null);
                         }
                     });
@@ -501,30 +505,24 @@ function generarPartida(IDPartida,numJugadores,callback)
     //introducir casillas
     accBBDD.insertarPiezasIniciales(IDPartida,generarPepitaOro(),function(err)
     {
-        console.log("paso 1");
         if(err)
         {
-            console.log("paso 2");
             callback(err);
         }
         else
         {
             //generar lista de turnos
-            console.log("paso 3");
             generarDatosJugador(IDPartida,numJugadores,function(err){          
                 if(err)
                 {   
-                    console.log("paso 4");
                     callback(err);
                 }
                 else
                 {
-                    console.log("paso 5");
                     //cambiar estado de la partida a 1
                     accBBDD.cambiarEstadoPartida(IDPartida,1,function(err){
                         if(err)
                         {
-                            console.log("paso 6");
                             callback(err);
                         }
                         else
@@ -542,19 +540,15 @@ function generarDatosJugador(IDPartida,numJugadores,callback)
 {
     var pos=0;
     var cartas;
-    console.log("paso 31");
     accBBDD.usuariosPartida(IDPartida,function(err,jugadores){
         if(err)
         {
-            console.log("paso 32");
             callback(err);
         }
         else
         {                
-            console.log("paso 33");
             var turnos=generarTurnos(numJugadores);
             var tipo=generarTipos(numJugadores);
-            console.log("paso 34");
             jugadores.forEach(function(jugador){
                 if(numJugadores>5)
                     cartas=generarCartasAleatorias(5);
@@ -564,7 +558,6 @@ function generarDatosJugador(IDPartida,numJugadores,callback)
                 {
                     if(err)
                     {
-                        console.log("paso 35");
                         callback(err);
                     }
                 });
@@ -754,17 +747,23 @@ function extraerTurnos(IDPartida,jugadores,callback)
 function extraerManoJugador(IDPartida,IDUsuario,numJugadores,callback)
 {
     var mano=[];
-    accBBDD.extraerManoJugador(IDPartida,IDUsuario,numJugadores,function(err,NunManos){
+    accBBDD.extraerManoJugador(IDPartida,IDUsuario,numJugadores,function(err,piezasMano){
         if(err)
         {
             callback(err,null);
         }
         else
         {
-            NunManos.forEach(function(num){
-                mano.push(cartasJuego[num]);
-            });
-            callback(null,mano);
+            //solo 5 cartas
+            if(piezasMano[0].mano6===undefined)
+            {
+                callback(null,[cartasJuego[piezasMano[0].mano1],cartasJuego[piezasMano[0].mano2],cartasJuego[piezasMano[0].mano3],cartasJuego[piezasMano[0].mano4],cartasJuego[piezasMano[0].mano5]]);
+            }
+            //toda la mano(menos de 5 jugadores)
+            else
+            {
+                callback(null,[cartasJuego[piezasMano[0].mano1],cartasJuego[piezasMano[0].mano2],cartasJuego[piezasMano[0].mano3],cartasJuego[piezasMano[0].mano4],cartasJuego[piezasMano[0].mano5],cartasJuego[piezasMano[0].mano6]]);
+            }
         }
     });
 }

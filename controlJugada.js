@@ -16,7 +16,7 @@ var cartasJuego= require("./cartasjuego");
 module.exports={
     validarJugada: validarJugada
 };
-function  validarJugada(IDUsuario,IDPartida,cartaMano,posicionTablero,callback)
+function  validarJugada(IDPartida,cartaMano,posicionTablero,callback)
 {
     //validar entrada
     if((cartaMano!==null || undefined) && cartaMano>=0 && cartaMano<=14)
@@ -48,14 +48,21 @@ function  validarJugada(IDUsuario,IDPartida,cartaMano,posicionTablero,callback)
                                 else
                                 {
                                     //Validamos la colocacion de la carta con respecto a los bordes
-                                    validacion(mano,tablero,function (err,estado){
-                                        if(err)
+                                    validacion(mano,tablero,function (err,tipoError,final){
+                                        if(err && tipoError===0)
                                         {
-                                            callback(err,1);
+                                            callback(err,0);
                                         }
                                         else
                                         {
-                                            callback(null,estado);
+                                            if (err && tipoError===1)
+                                            {
+                                                callback(err,1);
+                                            }    
+                                            else
+                                            {
+                                                callback(null,null,final);
+                                            }
                                         }
                                     });
                                 }
@@ -141,6 +148,7 @@ function validacion(mano,tablero,callback)
 {
     var key=2;
     var cont=0;
+    var numCntactos=0;
     var valido=false;
     //Recorremos las propiedades la mano desde la 2 (up)
     for (key in mano) 
@@ -153,53 +161,41 @@ function validacion(mano,tablero,callback)
                 //Si pieza del tablero es superior
                 if(cont===0)
                 {
-                    //Si mano UP es distindo de pieza del tablero DOWN
+                    //Si mano UP es igual que pieza del tablero DOWN
                     if(mano[key]!==tablero[cont].down)
                     {
-                        valido=false;
-                    }
-                    else
-                    {
                         valido=true;
+                        numCntactos++;
                     }
                 }
                 //Si pieza del tablero es inferior
                 else if(cont===1)
                 {
-                    //Si mano DOWN es distindo de pieza del tablero UP
+                    //Si mano DOWN es igual que pieza del tablero UP
                     if(mano[key]!==tablero[cont].up)
                     {
-                        valido=false;
-                    }
-                    else
-                    {
                         valido=true;
+                        numCntactos++;
                     }
                 }
                 //Si pieza del tablero es la izquierda
                 else if(cont===2)
                 {
-                    //Si mano LEFT es distindo de pieza del tablero RIGTH
+                    //Si mano LEFT es igual que pieza del tablero RIGTH
                     if(mano[key]!==tablero[cont].rigth)
                     {
-                        valido=false;
-                    }
-                    else
-                    {
                         valido=true;
+                        numCntactos++;
                     }
                 }
                 //Si pieza del tablero es la derecha
                 else
                 {
-                    //Si mano RIGTH es distindo de pieza del tablero LEFT
+                    //Si mano RIGTH es igual que pieza del tablero LEFT
                     if(mano[key]!==tablero[cont].left)
                     {
-                        valido=false;
-                    }
-                    else
-                    {
                         valido=true;
+                        numCntactos++;
                     }
                 }
            }
@@ -209,6 +205,49 @@ function validacion(mano,tablero,callback)
     if(valido===false)
         callback(new Error("La colocacion no es valida"),null);
     else
-        callback(null,true);
+    {
+        //La pieza que queremos introducir tiene mas de un contacto con otra
+        if(numCntactos>1)
+        {
+            tablero.forEach(function(pieza){
+                if(pieza!==null)
+                {
+                    //Si alguna de las piezas que toca es la pepita
+                    if(pieza.nombre==="Gold")
+                    {
+                        callback(null,null,true);
+                    }
+                    //Si alguna de las piezas que toca no es la pepita
+                    else if (pieza.nombre==="NoGold")
+                    {
+                        callback(null,null,false);
+                    }
+                }
+            });
+            //las piezas que toca no son de final
+            callback(null,null,false);
+        }
+        //son conectamos con una pieza
+        else if(numCntactos===1)
+        {
+            //controlamos que la pieza no este tocando con ninguno de los finales
+            tablero.forEach(function(pieza){
+                if(pieza!==null)
+                {
+                    if(pieza.nombre==="Gold" || pieza.nombre==="NoGold")
+                    {
+                        callback(new Error("No se Puede poner una pieza que no este conectada al inicio"),1,null);
+                    }
+                }
+            });
+            //la pieza no toca ninguno de los finales
+            callback(null,null,false);
+        }
+        //la pieza no toca con ninguna
+        else
+        {
+            callback(new Error("No hay ninguna pieza con la que conectar"),1,null);
+        }
+    }
 }
 
