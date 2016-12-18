@@ -29,23 +29,34 @@
 
 	<!--Cuerpo-->
         <div class="cuerpo">
-           
-            
-            
+
             <div class="entrada">
                 
+                <div class="mostrarJugadores">
+                    <h2>Jugadores:</h2>
+                    
+                    <% jugadores.forEach(function(obj){ %>
+                    <ul>
+                        
+                        <li><img id="jugador" src="/images/defecto.png" alt="Jugador por defecto"></li>
+                       
+                        <li><%=obj.Nick%></li>
+                    </ul>
+                    <%});%>
+                </div>
                 
                 <div  class="casillasTablero">            
                     <table>
                         <tr>
                             <% for(var i=1; i<=49; i++) {%>
                                 <% if(tablero[i-1] !== undefined){%>
+                                    
                                     <td><img id="pieza" src="/images/<%=tablero[i-1].imagen%>" alt="pieza"></td>
                                 <% }else{ %>
                                     <td></td>
                                 <% } %>
 
-                                <% if(i%7==0){%>
+                                <% if(i%7==0 && i!==49){%>
                                     </tr>
                                     <tr>
                                 <% } %>
@@ -56,16 +67,21 @@
 
                 <div class="opcionesJugador">
 
-                    <div class="">
-
+                    <div class="botonEnviar">
+                        <a href=""><img id="jugador" src="/images/piedra_enviar.png" alt="Jugador por defecto"></a>
                     </div>
 
-                    <div class="cartas">
-
+                    <div class="mano">
+                        <% console.log(mano);%>
+                        <% mano.forEach(function(obj){ %>
+                            <ul>
+                                <li><img id="jugador" src="/images/<%=obj.imagen%>" alt="Jugador por defecto"></li>
+                            </ul>
+                        <%});%>
                     </div>
 
-                    <div class="">
-
+                    <div class="botonDescartar">
+                        <a href=""><img id="jugador" src="/images/piedra_descartar.png" alt="Jugador por defecto"></a>
                     </div>
                 </div>
             </div>

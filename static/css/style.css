@@ -1,6 +1,6 @@
 @import '//fonts.googleapis.com/css?family=Bangers';
 body{
-	background: #51B6E0;
+        background-image:url("../images/back.jpg");
 	margin: 0px;
 }
 body h1{
@@ -12,7 +12,9 @@ body h2{
 body h3{
     font-family: 'Asset';
 }
-.cabecera{
+.cabeceraYMenu{
+    background: #51B6E0;
+    height: 200px;
 }
 #logo{
 	position: relative;
@@ -69,6 +71,7 @@ body h3{
 	height: 75px;
 	position: bottom;
 }
+
 .cuerpo{
 	background-image:url("../images/back.jpg");
 	position:relative;
@@ -162,15 +165,29 @@ body h3{
     height: 50px;
 }
 
+.casillasTablero{
+    
+}
+
 .casillasTablero table {
-    border: 1px solid #ddd;
+    margin-left: 100px;
+    background-color: #F7FAC3;
+    border:silver 3px inset;
     padding: 0px;
     text-align: center;
+}
+.casillasTablero table tr{
+    height: 100px;
 }
 
 .casillasTablero table tr td{
     width: 100px;
-    height: 100px; 
+    height: 100px;
+    padding: 0px;
+}
+
+.casillasTablero table tr td:hover {
+    background-color: #F8D098;
 }
 
 .casillasTablero table tr td img{
@@ -180,4 +197,91 @@ body h3{
 
 .manos{
     display: none;
+}
+
+.mostrarJugadores{
+    text-align: left;
+    background-color: #F3F7A7;
+    border:silver 3px inset;
+    position:relative;
+    float:left;
+    width: 200px;
+    height: 700px;
+    padding-right: 10px;
+}
+
+.mostrarJugadores ul{
+    background-color: #F7FAC3;
+    border:silver 3px inset;
+    list-style:none;
+    width: 200px;
+    height: 50px;
+    padding: 0px;
+}
+.mostrarJugadores ul li{
+     text-align: center;
+     
+}
+
+.mostrarJugadores ul li img{
+    height: 50px;
+    width: 50px;
+    position:relative;
+    float:left;
+}
+
+
+.botonEnviar{
+    position:relative;
+    float:left;
+    width: 200px;
+}
+.botonDescartar{
+    position:relative;
+    float:left;
+}
+.botonEnviar img{
+    width: 150px;
+    height: 75px;
+}
+
+.botonDescartar img{
+    width: 150px;
+    height: 75px;
+}
+
+.mano{
+    background-color: #F7FAC3;
+    border:silver 3px inset;
+    position:relative;
+    float:left;
+    width: 700px;
+    height: 100px;
+}
+
+.mano ul{
+    list-style:none;
+    
+}
+.mano ul li img{
+    width: 75px;
+    height: 75px;
+   
+}
+.mano ul li{
+    padding: 5px;
+    width: 75px;
+    height: 75px;
+    position:relative;
+    float:left;
+}
+.mano ul li:hover{
+    background-color: #F8D098;
+}
+
+.opcionesJugador{
+    background-color: #F7FAC3;
+    border:silver 3px inset;
+    margin-top: 10px;
+    height: 100px;
 }
