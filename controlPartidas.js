@@ -330,7 +330,7 @@ function controlJugada(IDPartida,IDUsuario,cartaUsada,posTablero,callback)
             ctrlJugada.validarJugada(IDPartida,cartaUsada,posTablero,function(err){
                 if(err)
                 {
-                    callback(err,0)
+                    callback(err,0);
                 }
                 else
                 {
@@ -739,6 +739,7 @@ function extraerTurnos(IDPartida,jugadores,callback)
                 if(jugador.Pos_turno===salida[0].Turno_juego)
                     nick=jugador.Nick;
             });
+            console.log("salida del turnos: "+salida[0].Turno+"|||"+salida[0].Num_turnos, nick);
             callback(null,salida[0].Turno,salida[0].Num_turnos,nick);
         }
     });
