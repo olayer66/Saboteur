@@ -52,7 +52,11 @@
                             <th>Fecha</th>
                         </tr>
                         <% partidas.parEnJuego.forEach(function(obj){%>
+                        <%if(obj.Pos_turno===0){%>
                         <tr>
+                        <%}else{%>
+                        <tr id="seleccionado">
+                        <%}%>    
                             <td><%=obj.Nombre%></td>
                             <td><%=obj.Num_Jugadores%></td>
                             <td><%=obj.Num_Max_Jugadores%></td>

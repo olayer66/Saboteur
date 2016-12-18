@@ -161,6 +161,9 @@ body h3{
 #tablaPartidas td {
     height: 50px;
 }
+#seleccionado{
+    background-color: #623C06;
+}
 #imgtabla{
     width: 100px;
     height: 50px;
@@ -184,10 +187,10 @@ body h3{
 
 .casillasTablero table tr td{
     width: 100px;
-    height: 100px;
+    height: auto;
     padding: 0px;
     border: #623C06 1px solid;
-    padding: 0px;
+    border-spacing: 0px;
 }
 
 .casillasTablero table tr td:hover {
@@ -205,32 +208,48 @@ body h3{
 
 .mostrarJugadores{
     text-align: left;
-    background-color: #F3F7A7;
-    border:silver 3px inset;
+    background-image: url("../images/usuarios.png") ;
+    background-repeat: no-repeat;
     position:relative;
     float:left;
-    width: 200px;
-    height: 700px;
+    width: 220px;
+    height: 750px;
     padding-right: 10px;
+    padding-left: 15px;
 }
-
+.mostrarJugadores h2{
+    margin-bottom: 2px;
+    margin-top: 50px;
+}
 .mostrarJugadores ul{
-    background-color: #E99A2A;
-    border:#623C06 2px inset;
+    background-color: #F8D098;
+    border:#623C06 2px solid;
     list-style:none;
-    width: 200px;
+    text-align: center;
+    width: 180px;
     height: 50px;
     padding: 0px;
 }
-.mostrarJugadores ul li{
-     text-align: center;
-     
+.mostrarJugadores ul{
+    list-style:none;
+}
+#contUsuario{
+    background-color: #F8D098;
+    border:#623C06 2px solid;
+    list-style:none;
+    width: 180px;
+    height: 50px;
+    padding: 0px;
+}
+.mostrarJugadores ul li p{
+    font-size: 20px;
+    text-align: center; 
+    vertical-align: central;
 }
 
 .mostrarJugadores ul li img{
     height: 50px;
     width: 50px;
-    position:relative;
     float:left;
 }
 
@@ -239,6 +258,7 @@ body h3{
     position:relative;
     float:left;
     width: 200px;
+    text-align: center;
 }
 .botonDescartar{
     position:relative;
@@ -255,12 +275,14 @@ body h3{
 }
 
 .mano{
-    background-color: #F7FAC3;
-    border:silver 3px inset;
+    border:#623C06 3px outset;
+    background-color: #F8D098;
+    border-radius: 25px;
     position:relative;
     float:left;
-    width: 700px;
+    width: 600px;
     height: 100px;
+    margin-left: 40px;
 }
 
 .mano ul{
@@ -284,27 +306,39 @@ body h3{
 }
 
 .opcionesJugador{
-    background-color: #F7FAC3;
-    border:silver 3px inset;
     margin-top: 10px;
     height: 100px;
 }
 
 .informacion{
-    background-color: #F7FAC3;
-    border:silver 3px inset;
+    
     margin-bottom: 10px;
-    margin-left: 216px;
-    height: 25px;
-    width: 700pX
+    margin-left: 250px;
+    height: 50px;
+    width: 700px;
 }
 
 .turnoJugador{
+    border:#623C06 3px outset;
+    background-color: #F8D098;
+    height: 50px;
+    border-radius: 25px;
     position:relative;
+    font-size: 30px;
+    padding-left:10px;
+    padding-right:10px;
+    vertical-align: central;
     float:left;
 }
-
 .numTurno{
+    border:#623C06 3px outset;
+    background-color: #F8D098;
+    height: 50px;
+    border-radius: 25px;
+    font-size: 30px;
+    padding-left:10px;
+    padding-right:10px;
+    vertical-align: central;
     position:relative;
     float:right;
 }

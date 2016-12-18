@@ -49,19 +49,22 @@
                 </div>
                 
                 <div class="mostrarJugadores">
-                    <h2>Jugadores:</h2>
-                    
-                    <% jugadores.forEach(function(obj){ %>
+                    <h2>Jugadores:</h2>          
                     <ul>
-                        
-                        <li><img id="jugador" src="/images/defecto.png" alt="Jugador por defecto"></li>                     
-                        <li><%=obj.Nick%></li>
+                        <% jugadores.forEach(function(obj){ %>
+                            <li>
+                                <div id="contUsuario">
+                                    <img id="jugador" src="/images/defecto.png" alt="Jugador por defecto">                    
+                                    <p><%=obj.Nick%></p>
+                                </div>
+                            </li>
+                        <%});%>
                     </ul>
-                    <%});%>
+                    
                 </div>
                 
                 <div  class="casillasTablero">
-                    <table class="tablaTablero">
+                    <table>
                         
                         <tr>
                             <% for(var i=1; i<=49; i++) {%>
@@ -72,7 +75,7 @@
                                         <p class="imgDescription">Propietario: <%=tablero[i-1].propietario%></p>
                                     </div>
                                 <% }else{ %>                                 
-                                    <td><img src="/images/Tback.png" alt="nada"></td>
+                                    <td><a href="/tablero/casilla/<%=i-1%>"><img src="/images/Tback.png" alt="nada"></a></td>
                                 <% } %>
                                 <% if(i%7==0 && i!==49){%>
                                     </tr>
@@ -90,11 +93,12 @@
                     </div>
 
                     <div class="mano">
+                        <%var cont=1;%>
                         <% mano.forEach(function(obj){ %>
                             <ul>
-                                <li><img id="jugador" src="/images/<%=obj.imagen%>" alt="Jugador por defecto"></li>
+                                <li><a href="/tablero/mano/mano<%=cont%>"><img id="jugador" src="/images/<%=obj.imagen%>" alt="Jugador por defecto"></a></li>
                             </ul>
-                        <%});%>
+                        <%cont++;});%>
                     </div>
 
                     <div class="botonDescartar">

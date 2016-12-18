@@ -109,26 +109,35 @@ function verPartidasUsuario(IDUsuario,callback)
                         }
                         else
                         {
-                            vista.parEnJuego=enJuego;
-                            accBBDD.partidasUsuarioEnEspera(IDUsuario,function(err,enEspera){
+                            esTurnoJugador(IDUsuario,enJuego,function(err,partidas){
                                 if(err)
                                 {
-                                     callback(err,null);
+                                    callback(err,null);
                                 }
                                 else
                                 {
-                                    vista.parEspera=enEspera;
-                                    partidasDisponibles(IDUsuario,function(err,parDisponibles){
+                                    vista.parEnJuego=partidas;
+                                    accBBDD.partidasUsuarioEnEspera(IDUsuario,function(err,enEspera){
                                         if(err)
                                         {
-                                            callback(err,null);
+                                             callback(err,null);
                                         }
                                         else
                                         {
-                                            vista.parDisponibles=parDisponibles;
-                                            callback(null,vista);
-                                        }    
-                                    });                                                              
+                                            vista.parEspera=enEspera;
+                                            partidasDisponibles(IDUsuario,function(err,parDisponibles){
+                                                if(err)
+                                                {
+                                                    callback(err,null);
+                                                }
+                                                else
+                                                {
+                                                    vista.parDisponibles=parDisponibles;
+                                                    callback(null,vista);
+                                                }    
+                                            });                                                              
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -874,4 +883,26 @@ function partidasEnJuego(IDUsuario,callback)
         }
     });
 }
-
+function esTurnoJugador(IDUsuario,partidas,callback)
+{
+    partidas.forEach(function(partida){
+        accBBDD.turnoDelUsuario(IDUsuario,partida.ID_partida,function(err,turno){
+            if(err)
+            {
+                
+            }
+            else
+            {
+                if(turno[0].Pos_Turno===partida.Turno_juego)
+                {
+                    partida.Turno_juego=0;
+                }
+                else
+                {
+                    partida.Turno_juego=1;
+                }
+            }
+        });
+    });
+    callback(null,partidas);
+}

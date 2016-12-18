@@ -43,6 +43,7 @@ module.exports={
     añadirCartaMano:añadirCartaMano,
     extraerManoJugador:extraerManoJugador,
     extraerCartaManoJugador:extraerCartaManoJugador,
+    turnoDelUsuario:turnoDelUsuario,
     //Piezas_Partida
     extraerPiezas:extraerPiezas,
     extraerUnaPieza:extraerUnaPieza,
@@ -944,6 +945,44 @@ function usuariosPartida(ID,callback)
     {
         query="SELECT ID_Usuario FROM Asignacion_Partidas WHERE ID_Partida= ?";
         valoresEntrada=[ID];
+        //Conectamos con la consulta requerida
+        conexion.connect(function(err)
+    {
+        if (err) 
+        {
+            console.error(err);
+            callback(err,null);
+        } 
+        else 
+        {
+            conexion.query(mysql.format(query,valoresEntrada),function(err, rows) 
+                    {
+                        if (err) 
+                        {
+                            console.error(err);
+                            callback(err,null);
+                        } 
+                        else 
+                        {
+                            callback(null,rows);
+                        }
+                    });
+        }
+        conexion.end();
+    }); 
+    }
+    else
+    {
+        callback(new Error("El ID de partida no es valido"),null);
+    }
+}
+function turnoDelUsuario(IDPartida,IDUsuario,callback)
+{
+    var conexion = mysql.createConnection(config.conexionBBDD);
+    if(IDPartida!==null)
+    {
+        query="SELECT Pos_Turno FROM Asignacion_Partidas WHERE ID_Partida= ? AND ID_Usuario=?";
+        valoresEntrada=[IDPartida,IDUsuario];
         //Conectamos con la consulta requerida
         conexion.connect(function(err)
     {
