@@ -327,28 +327,48 @@ function controlJugada(IDPartida,IDUsuario,cartaUsada,posTablero,callback)
         else
         {
             //Controlar la juagada
-            ctrlJugada.validarJugada(IDPartida,cartaUsada,posTablero,function(err){
-                if(err)
+            ctrlJugada.validarJugada(IDPartida,cartaUsada,posTablero,function(err,tipoError,finalizar){
+                if(err && tipoError===0)
                 {
                     callback(err,0);
                 }
                 else
                 {
-                    //pasar turno
-                    pasarTurno(IDPartida,IDUsuario,cartaUsada,function(err,tipoError,valido,finalJuego){
-                        if(err && tipoError===0)
+                    if(err && tipoError===1)
+                    {
+                        callback(err,0);
+                    }
+                    else
+                    {
+                        if(finalizar===true)
                         {
-                            callback(err,0);
+                            //Llamamos a finalizar partida
+                            finalizarPartida(IDPartida,"B",function(err){
+                                if(err)
+                                {
+                                    callback(err,0);
+                                }
+                                else
+                                {
+                                    callback(null);
+                                }
+                            });
                         }
                         else
                         {
-                            if (err && tipoError===1)
-                            {
-                                callback(err,1);
-                            }    
-                            callback(null);
+                            //pasar turno
+                            pasarTurno(IDPartida,IDUsuario,cartaUsada,function(err){
+                                if(err)
+                                {
+                                    callback(err,0);
+                                }
+                                else
+                                {
+                                    callback(null);
+                                }
+                            });
                         }
-                    });
+                    }
                 }
             });
         }
